@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thriftly</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class = "navbar">
+        <div class = "logo">Thriftly</div>
+        <ul class = "nav-links">
+            <li><a href="#vendors">Browse</a></li>
+            <li><a href="#trust">How It Works</a></li>
+            <li><a href="about">Our Mission</a></li>
+            <li><a href = "#list">List Your Stall</a></li>
+        </ul>
+
+        <button class = "btn">Become a Seller</button>
+    </nav>
+    
+    
+    <section class = "hero" id = "top">
+        <h1>Nairobi's thrift markets <em> verfied and online </em></h1>
+        <p>
+            Thriftly replaces brokers with a verified digital platform connecting 
+            buyers and resellers directly to trusted stall owners across Nairobi.
+
+        </p>
+
+        <!-- Buyer vs Reseller toggle-->
+
+        <div class ="mode-toggle">
+            <button class = "mode-btn active" id = "buyerModeBtn">
+                <i class = "fa-solid fa-cart-shopping"> I'm Shopping</i>
+            </button>
+
+            <button class = "mode-btn" id = "resellerModeBtn">
+                <i class = "fa-solid fa-boxes-stacked">I'm Sourcing Stock</i>
+            </button>
+        </div>
+
+
+        <!-- Search Bar-->
+         <div class = "search-bar">
+            <input type = "text" id = "searchInput" placeholder = "Search stalls, styles, or markets...">
+            <button id = "searchBtn"> Search</button> 
+         </div>
+    </section>
+    
+
+    <!--Stats Bar-->
+    <section class = "stats-bar">
+        <div class = "stat">
+            <strong> 47</strong>
+            <span>Verified Sellers</span>
+        </div>
+
+        <div class = "stat">
+            <strong> 12</strong>
+            <span>Nairobi Markets</span>
+        </div>
+
+        <div class = "stat">
+            <strong>3.2k</strong>
+            <span>Active Buyers</span>
+        </div>
+
+        <div class = "stat">
+            <strong> 0</strong>
+            <span>Brokers needed</span>
+    </section>
+
+    <!--Browse Stalls Section-->
+    <section class = "section" id = "vendors">
+        <div class =  "section-header">
+            <div>
+                <span class = "eyebrow" id="modelLabel">Browsing as buyer</span>
+                <h2>Find a stall</h2>
+            </div>
+            <span class = "count-label" id = "count-label"> Showing all stalls</span>
+        </div>
+
+        <!--Filter buttons-->
+        <div class = "filters">
+            <span>Filter: </span>
+            <button class = "filter-btn active" data-filter="All">All</button>
+            <button class = "filter-btn" data-filter="Vintage">Vintage</button>
+            <button class = "filter-btn" data-filter="Streetwear">Streetwear</button>
+            <button class = "filter-btn" data-filter="Kids">Kids</button>
+            <button class = "filter-btn" data-filter="Accessories">Accessories</button>
+            <button class = "filter-btn" data-filter="Bulk">Bulk</button>
+        </div>
+
+        <div class = "vendor-grid" id = "vendorGrid"></div>
+    </section>
+
+    <!--How it workds-->
+    <section class = "trust-strip" id = "trust">
+
+        <div class = "section-narrow">
+            <span class="eyebrow center">How it works</span>
+            <h2 class="center">Built so buyers actually trust what they are getting</h2>
+
+
+            <!--Trust pillars-->
+            <div class = "trust-grid">
+                <div class = "trust-card">
+                    <div class = "trust-icon"><i class = "fa-solid fa-circle-check"></i></div>
+                    <h4>Verified seller profiles</h4>
+                    <p>Every stall owner is identity checked and onboarded in person before they're listed</p>
+                </div>
+
+                <div class = "trust-card">
+                    <div class = "trust-icon"><i class = "fa-solid fa-star"></i></div>
+                    <h4>Condition ratings</h4>
+                    <p>Items are rated A-C on condition by the seller and confirmed by buyer reviews after pickup</p>
+                </div>
+
+                <div class = "trust-card">
+                    <div class = "trust-icon"><i class = "fa-solid fa-look"></i></div>
+                    <h4>Escrow-lite payments</h4>
+                    <p>Your money is held by Thriftly and only released to the seller once you confirm the item matches.</p>
+                </div>
+            </div>
+
+            <!--payment flow-->
+            <h3 class = "center">How a payment actually moves</h3>
+            <div class = "escrow-flow">
+                <div class = "escrow-stop">
+                    <div class = "num">1</div>
+                    <strong>Buyer pays</strong>
+                    <p>Funds sent to Thriftly, not directly to the seller</p>
+                </div>
+
+                <span class = "escrow-arrow"><i class = "fa-solid fa-arrow-right"></i></span>
+
+                <div class = "escrow-step">
+                    <div class = "num">2</div>
+                    <strong>Funds held</strong>
+                    <p>Thriftly holds payment until pickup or delivery</p>
+                </div>
+
+                <span class = "escrow-arrow"><i class = "fa-solid fa-arrow-right"></i></span>
+
+                <div class = "escrow-step">
+                    <div class = "num">3</div>
+                    <strong>Buyer confirms</strong>
+                    <p>Item checked against the listed condition rating</p>
+                </div>
+
+                <span class = "escrow-arrow"><i class = "fa-solid fa-arrow-right"></i></span>
+
+                <div class = "escrow-step">
+                    <div class = "num">4</div>
+                    <strong>Seller paid</strong>
+                    <p>Funds released minus Thriftly's commission</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!--Our Mission Section-->
+    <section class="about" id="about">
+        <div class="about-inner">
+            <span class="eyebrow center">Why we built this</span>
+
+            <h2 class="center">Existing alternatives weren't working</h2>
+            <p class="lead center">
+                Right now, finding a specific stall means paid brokers, freinds referrals,
+                or searching market alleys yourself. We replace that with a verified, searchable
+                platform.
+            </p>
+
+            <!--Problem vs Solution-->
+            <div class = "why-grid">
+                <div class="ps-card problem">
+
+                    <h4><i class="fa-solid fa-triangle-exclamation"></i>The problem</h4>
+
+                    <ul>
+                        <li>Time consuming to find specific stalls</li>
+                        <li>Price hiking based on how a buyer looks</li>
+                        <li>Hard to access stalls at the back of markets</li>
+                    </ul>
+                </div>
+
+                <div class="ps-card solution">
+                    <h4><i class="fa-solid fa-circle-check"></i>Our solution</h4>
+                    <ul>
+                        <li>Verified seller profiles, no guesswork</li>
+                        <li>Searchable stall listings by category and market</li>
+                        <li>Escrow lite paymets and condition ratings</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!--Customer segments-->
+            <span class="eyebrow">Who Thriftly is for</span>
+            <div class="segment-strip">
+                <div class="segment-pill">
+                    <h5><i class="fa-solid fa-graduation-cap"></i>Youth, 15-30</h5>
+                    <p>Can't afford designer prices but want quality, current styles.</p>
+
+                </div>
+
+                <div class="segment-pill">
+                    <h5><i class="fa-solid fa-coins"></i>Budget shoppers</h5>
+                    <p>People who can't afford new or designer clothing day-today</p>
+                </div>
+
+                <div class="segment-pill">
+                    <h5><i class="fa-solid fa-boxes-stacked"></i>Resselrs</h5>
+                    <p>Sourcing stock in bulk to resell elsewhere -our B2B segment.</p>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <!--Revenue strip-->
+
+    <section class="revenue-strip">
+        <h3>How Thriftly makes money</h3>
+        <div class="revenue-items">
+            <span class="revenue-items"><i class="fa-solid fa-money-bill-wave"></i>Commission per transaction</span>
+            <span class="revenue-item"><i class="fa-solid fa-thumbtack"></i>Promoted stall listings</span>
+            <span class="revenue-items"><i class="fa-solid fa-truck"></i>Delivery fees for buyers</span>
+        </div>
+    </section>
+
+
+    <!--List your stall from-->
+    <section class="list-section" id="list">
+        <div class="form-card">
+
+            <h2>List your stall</h2>
+            <p>Run a thrift stall in a Nairobi market? Get verified and discovered by thousands of buyers and resellers - free to join.</p>
+
+            <form id="vendorForm">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="storeName">Stall name</label>
+                        <input type="text" id="storeName" placeholder="e.g. Mama Njeri's Closet">
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerName">Your name</label>
+                        <input type="text" id="ownerName" placeholder="Full name">
+
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="you@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone / WhatsApp</label>
+                        <input type="text" id="phone" placeholder="+254...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Market / Area</label>
+                    <input type="text" id="location" placeholder="e.g. Gikomba, Toi Market">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="">Select a category</option>
+                        <option>Vintage</option>
+                        <option>Streetwear</option>
+                        <option>Accessories</option>
+                        <option>Kids</option>
+                        <option>Bulk / Resale </option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="storeDesc">Tell us about your stall</label>
+                    <textarea id="storeDesc" placeholder="What do you sell? What makes your stall worth visiting?"></textarea>
+                </div>
+
+
+                <button type="submit" class="btn btn-full" id="submitVendorBtn">Submit for verification</button>
+
+
+                <!--success message-->
+                <div class ="form-success" id="formSuccess">
+                    🎉 Thanks! Our team will verify your stall in person within 48 hours
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+
+    <!--Footer-->
+
+    <footer  class="site-footer">
+        <p>© 2025 Thriftly — Like Airbnb, but for Nairobi's thrift markets 💚</p>
+    </footer>
+
+    <!--Vendor Detail Modal-->
+    <!--Hidden-->
+
+    <div class="modal-backdrop" id="modal">
+        <div class="modal" id="modalContent">
+
+            <button class="close-btn" id="closeModalBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal-banner" id="mBanner"></div>
+        </div>
+
+        <div class="modal-banner" id="mBanner"></div>
+        <div class="modal-body">
+            <h2 id="mName"></h2>
+
+            <div class="modal-meta" id="mMeta"></div>
+
+            <p class="modal-desc" id="mDesc"></p>
+
+            <div class="modal-info" id="mInfo"></div>
+            <div class="modal-actions" id="mActions"></div>
+        </div>
+    </div>
+</body>
+</html>
