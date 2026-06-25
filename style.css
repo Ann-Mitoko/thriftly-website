@@ -1,0 +1,899 @@
+:root {
+    --green: #1d6a47;
+    --green-light: #e1f5ee;
+    --green-mid: #5dcaa5;
+    --amber: #ba7517;
+    --amber-ligh: #faeeda;
+    --text: #1a1a1a;
+    --text-muted: #555555;
+    --bg: #f9f6f0;
+    --white: #ffffff;
+    --radius: 12px;
+}
+
+/*Base*/
+* {
+    margin : 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI' , Arial, sans-serif;
+    background-color: var (--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+h1,h2,h3,h4,h5 {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.center {
+    text-align: center;
+}
+
+/*Navigation bar*/
+.navbar {
+  background-color: var(--green);
+  padding: 15px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  color: var(--white);
+  font-size: 1.4rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ 
+/* the shopping bag icon itself */
+.logo i {
+  font-size: 1.3rem;
+}
+ 
+/* nav links list */
+.nav-links {
+  display: flex;
+  gap: 25px;
+  list-style: none;
+}
+ 
+.nav-links a {
+  color: var(--green-light);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+ 
+.nav-links a:hover {
+  color: var(--white);
+  text-decoration: underline;
+}
+ 
+/* the "Become a Seller" button */
+.btn {
+  background-color: var(--white);
+  color: var(--green);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+ 
+.btn:hover {
+  background-color: var(--green-light);
+}
+
+/*hero section */
+.hero {
+  background-color: var(--green);
+  color: var(--white);
+  padding: 60px 30px 45px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+ 
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+ 
+.hero h1 em {
+  font-style: italic;
+  color: var(--green-mid);
+}
+ 
+.hero p {
+  font-size: 1rem;
+  opacity: 0.85;
+  max-width: 540px;
+  margin: 0 auto 28px;
+}
+ 
+/* Buyer / Reseller toggle */
+.mode-toggle {
+  display: inline-flex;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+ 
+.mode-btn {
+  background: none;
+  border: none;
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  opacity: 0.75;
+}
+ 
+.mode-btn.active {
+  background-color: var(--white);
+  color: var(--green);
+  opacity: 1;
+  font-weight: bold;
+}
+ 
+/* Search bar */
+.search-bar {
+  display: flex;
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--white);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+ 
+.search-bar input {
+  flex: 1;
+  border: none;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  outline: none;
+  color: var(--text);
+}
+ 
+.search-bar button {
+  background-color: var(--amber);
+  color: var(--white);
+  border: none;
+  padding: 14px 22px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+ 
+.search-bar button:hover {
+  background-color: #9a600f;
+}
+
+/* stats bar */
+.stats-bar {
+  background-color: var(--white);
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  justify-content: center;
+  gap: 45px;
+  padding: 18px;
+  flex-wrap: wrap;
+}
+ 
+.stat {
+  text-align: center;
+}
+ 
+.stat strong {
+  display: block;
+  font-size: 1.4rem;
+  color: var(--green);
+}
+ 
+.stat span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/*  general spacing section */
+
+.section {
+  padding: 40px 30px;
+}
+ 
+.eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+ 
+/* browse stalls section */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+ 
+.section-header h2 {
+  font-size: 1.5rem;
+}
+ 
+.count-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+ 
+/* Filter buttons row */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+ 
+.filters span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+ 
+.filter-btn {
+  background-color: var(--white);
+  border: 1px solid #dddddd;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--text);
+}
+ 
+.filter-btn:hover,
+.filter-btn.active {
+  background-color: var(--green);
+  color: var(--white);
+  border-color: var(--green);
+}
+ 
+/* Vendor card grid */
+.vendor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* The card itself */
+.vendor-card {
+  background-color: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+ 
+.vendor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+ 
+/* Colored banner area at the top of each card */
+.card-banner {
+  height: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  position: relative;
+}
+ 
+/* "Verified" badge sitting on top of the banner */
+.card-badge {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  background-color: rgba(255, 255, 255, 0.92);
+  color: var(--green);
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+ 
+.card-body {
+  padding: 16px;
+}
+ 
+.card-body h3 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+ 
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+ 
+.tag {
+  background-color: var(--green-light);
+  color: var(--green);
+  font-size: 0.7rem;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+ 
+.tag-amber {
+  background-color: var(--amber-light);
+  color: var(--amber);
+}
+ 
+.card-location {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+ 
+.card-desc {
+  font-size: 0.8rem;
+  color: #777777;
+  line-height: 1.5;
+}
+ 
+/* Footer strip inside each card - rating + price */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+ 
+.stars {
+  color: #f59e0b;
+  font-size: 0.85rem;
+}
+ 
+.rating-count {
+  font-size: 0.78rem;
+  color: #555555;
+}
+ 
+.price {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ===== HOW IT WORKS / TRUST SECTION ===== */
+.trust-strip {
+  background-color: var(--white);
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+  padding: 45px 30px;
+}
+ 
+.section-narrow {
+  max-width: 900px;
+  margin: 0 auto;
+}
+ 
+.trust-strip h2 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+ 
+/* Three trust pillar cards */
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 25px 0 40px;
+}
+ 
+.trust-card {
+  text-align: center;
+  padding: 15px;
+}
+ 
+.trust-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--green-light);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin: 0 auto 12px;
+}
+ 
+.trust-card h4 {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+ 
+.trust-card p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+ 
+/* 4-step escrow payment flow */
+.trust-strip h3 {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+ 
+.escrow-flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+ 
+.escrow-step {
+  background-color: var(--white);
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  flex: 1;
+  min-width: 140px;
+}
+ 
+.escrow-step .num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--amber);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+}
+ 
+.escrow-step strong {
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: 4px;
+}
+ 
+.escrow-step p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+ 
+.escrow-arrow {
+  color: #cccccc;
+  font-size: 1.1rem;
+}
+ 
+/* our mission section */
+.about {
+  background-color: var(--white);
+  padding: 45px 30px;
+  border-top: 1px solid #eeeeee;
+}
+ 
+.about-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+ 
+.about h2 {
+  font-size: 1.7rem;
+  margin-bottom: 10px;
+}
+ 
+.about .lead {
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+ 
+/* Problem vs Solution cards */
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+ 
+.ps-card {
+  padding: 20px;
+  border-radius: var(--radius);
+  border: 1px solid;
+}
+ 
+.ps-card.problem {
+  background-color: #fff5f5;
+  border-color: #fecaca;
+}
+ 
+.ps-card.solution {
+  background-color: var(--green-light);
+  border-color: var(--green-mid);
+}
+ 
+.ps-card h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+ 
+.ps-card.problem h4 {
+  color: #b91c1c;
+}
+ 
+.ps-card.solution h4 {
+  color: var(--green);
+}
+ 
+.ps-card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+ 
+.ps-card ul li::before {
+  content: "→ ";
+  font-weight: bold;
+}
+ 
+.ps-card.problem li::before {
+  color: #b91c1c;
+}
+ 
+.ps-card.solution li::before {
+  color: var(--green);
+}
+ 
+/* Customer segments */
+.segment-strip {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+ 
+.segment-pill {
+  background-color: var(--white);
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  padding: 16px;
+  flex: 1;
+  min-width: 180px;
+}
+ 
+.segment-pill h5 {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+ 
+.segment-pill p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+ 
+/* revenue strip */
+.revenue-strip {
+  background-color: var(--green);
+  color: var(--white);
+  padding: 35px 30px;
+  text-align: center;
+}
+ 
+.revenue-strip h3 {
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+}
+ 
+.revenue-items {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  flex-wrap: wrap;
+}
+ 
+.revenue-item {
+  font-size: 0.85rem;
+  opacity: 0.92;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ 
+/* list all your stalls form */
+.list-section {
+  background-color: var(--bg);
+  padding: 45px 30px;
+  border-top: 1px solid #eeeeee;
+}
+ 
+.form-card {
+  background-color: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius);
+  padding: 30px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+ 
+.form-card h2 {
+  font-size: 1.35rem;
+  margin-bottom: 6px;
+}
+ 
+.form-card > p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+ 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+ 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+ 
+label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+ 
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+}
+ 
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--green);
+}
+ 
+textarea {
+  height: 80px;
+  resize: vertical;
+}
+ 
+.btn-full {
+  width: 100%;
+  padding: 13px;
+}
+ 
+/* Hidden until JavaScript shows it after form submit */
+.form-success {
+  display: none;
+  background-color: var(--green-light);
+  border: 1px solid var(--green-mid);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--green);
+  margin-top: 14px;
+}
+ 
+/* footer */
+.site-footer {
+  text-align: center;
+  padding: 28px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  border-top: 1px solid #eeeeee;
+}
+  .footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+ 
+.footer-socials a {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--sage-light);
+  color: var(--sage-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+ 
+.footer-socials a:hover {
+  background-color: var(--terracotta);
+  color: var(--white);
+}
+ 
+/* vendor detail modal */
+/*hidden until shown */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+ 
+.modal-backdrop.open {
+  display: flex;
+}
+ 
+.modal {
+  background-color: var(--white);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+ 
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+ 
+.modal-banner {
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.4rem;
+}
+ 
+.modal-body {
+  padding: 24px;
+}
+ 
+.modal-body h2 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+ 
+.modal-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+ 
+.verify-banner {
+  background-color: var(--green-light);
+  border: 1px solid var(--green-mid);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 0.8rem;
+  color: var(--green);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ 
+.modal-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+ 
+.modal-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+ 
+.info-item {
+  background-color: var(--bg);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.8rem;
+}
+ 
+.info-item strong {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+ 
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+ 
+/* smaller boxes */
+@media (max-width: 700px) {
+  .why-grid,
+  .trust-grid,
+  .form-row,
+  .modal-info {
+    grid-template-columns: 1fr;
+  }
+ 
+  .nav-links {
+    display: none;
+  }
+ 
+  .hero h1 {
+    font-size: 1.9rem;
+  }
+}
