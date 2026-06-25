@@ -3,7 +3,7 @@
     --green-light: #e1f5ee;
     --green-mid: #5dcaa5;
     --amber: #ba7517;
-    --amber-ligh: #faeeda;
+    --amber-light: #faeeda;
     --text: #1a1a1a;
     --text-muted: #555555;
     --bg: #f9f6f0;
@@ -20,7 +20,7 @@
 
 body {
     font-family: 'Segoe UI' , Arial, sans-serif;
-    background-color: var (--bg);
+    background-color: var(--bg);
     color: var(--text);
     line-height: 1.5;
 }
