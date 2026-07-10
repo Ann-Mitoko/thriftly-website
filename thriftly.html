@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thriftly</title>
 
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛍️</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fraunces:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
 
-    <link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!--<link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">-->
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,14 +21,23 @@
     <!-- Navigation Bar -->
     <nav class = "navbar">
         <div class = "logo"><i class ="fa-solid fa-bag-shopping"></i> Thriftly</div>
-        <ul class = "nav-links">
+       
+       <div class="nav-right">
+        <ul class = "nav-links" id="navLinks">
             <li><a href="#vendors">Browse</a></li>
             <li><a href="#trust">How It Works</a></li>
             <li><a href="#about">Our Mission</a></li>
             <li><a href ="#list">List Your Stall</a></li>
         </ul>
 
-        <button class = "btn">Become a Seller</button>
+        <button class = "btn" onclick="document.getElementById('list').scrollIntoView({behavior:'smooth'})">Become a Seller</button>
+        </div>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <i class="fa-solid fa-bars"></i>
+       </button>
+
+
     </nav>
     
     
@@ -37,11 +52,11 @@
         <!-- Buyer vs Reseller toggle-->
 
         <div class ="mode-toggle">
-            <button class = "mode-btn active" id = "buyerModeBtn">
+            <button class = "mode-btn active" id = "buyerModeBtn" onclick="setUserMode('buyer')">
                 <i class = "fa-solid fa-cart-shopping"></i> I'm Shopping
             </button>
 
-            <button class = "mode-btn" id = "resellerModeBtn">
+            <button class = "mode-btn" id = "resellerModeBtn" onclick="setUserMode('reseller')">
                 <i class = "fa-solid fa-boxes-stacked"></i>I'm Sourcing Stock
             </button>
         </div>
@@ -49,8 +64,8 @@
 
         <!-- Search Bar-->
          <div class = "search-bar">
-            <input type = "text" id = "searchInput" placeholder = "Search stalls, styles, or markets...">
-            <button id = "searchBtn"> Search</button> 
+            <input type = "text" id = "searchInput" placeholder = "Search stalls, styles, or markets..."   oninput="filterVendors()">
+            <button onclick="filterVendors()"> Search</button> 
          </div>
     </section>
     
@@ -85,18 +100,19 @@
                 <span class = "eyebrow" id="modeLabel">Browsing as buyer</span>
                 <h2>Find a stall</h2>
             </div>
+
             <span class = "count-label" id = "count-label"> Showing all stalls</span>
         </div>
 
         <!--Filter buttons-->
         <div class = "filters">
             <span>Filter: </span>
-            <button class = "filter-btn active" data-filter="All">All</button>
-            <button class = "filter-btn" data-filter="Vintage">Vintage</button>
-            <button class = "filter-btn" data-filter="Streetwear">Streetwear</button>
-            <button class = "filter-btn" data-filter="Kids">Kids</button>
-            <button class = "filter-btn" data-filter="Accessories">Accessories</button>
-            <button class = "filter-btn" data-filter="Bulk">Bulk</button>
+            <button class = "filter-btn active" data-filter="All"  onclick="setFilter('All')">All</button>
+            <button class = "filter-btn" data-filter="Vintage"  onclick="setFilter('Vintage')">Vintage</button>
+            <button class = "filter-btn" data-filter="Streetwear"  onclick="setFilter('Streetwear')">Streetwear</button>
+            <button class = "filter-btn" data-filter="Kids"  onclick="setFilter('Kids')">Kids</button>
+            <button class = "filter-btn" data-filter="Accessories"  onclick="setFilter('Accessories')">Accessories</button>
+            <button class = "filter-btn" data-filter="Bulk" onclick="setFilter('Bulk')">Bulk / Resale </button>
         </div>
 
         <div class = "vendor-grid" id = "vendorGrid"></div>
@@ -232,6 +248,7 @@
     <section class="revenue-strip">
         <h3>How Thriftly makes money</h3>
         <div class="revenue-items">
+
             <span class="revenue-item"><i class="fa-solid fa-money-bill-wave"></i>Commission per transaction</span>
             <span class="revenue-item"><i class="fa-solid fa-thumbtack"></i>Promoted stall listings</span>
             <span class="revenue-item"><i class="fa-solid fa-truck"></i>Delivery fees for buyers</span>
@@ -298,13 +315,20 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-full" id="submitVendorBtn">Submit for verification</button>
+                <button type="submit" class="btn btn-full" >Submit for verification</button>
 
 
                 <!--success message-->
                 <div class ="form-success" id="formSuccess">
                     🎉 Thanks! Our team will verify your stall in person within 48 hours
                 </div>
+
+           <!--Error message if fileds are missing-->
+                <div class="form-error" id="formError">
+          ⚠️ Please fill in all required fields before submitting.
+        </div>
+
+
             </form>
         </div>
 
@@ -314,25 +338,45 @@
     <!--Footer-->
 
     <footer  class="site-footer">
+
+        <div class="footer-socials">
+      <a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+      <a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">
+        <i class="fa-brands fa-tiktok"></i>
+      </a>
+      <a href="https://facebook.com/" target="_blank" rel="noopener" aria-label="Facebook">
+        <i class="fa-brands fa-facebook"></i>
+      </a>
+    </div>
+
         <p>© 2025 Thriftly — Like Airbnb, but for Nairobi's thrift markets 💚</p>
+
+
     </footer>
 
     <!--Vendor Detail Modal-->
     <!--Hidden-->
 
-    <div class="modal-backdrop" id="modal">
+    <div class="modal-backdrop" id="modal"  onclick="closeModalOutside(event)">
         <div class="modal" id="modalContent">
 
             <button class="close-btn" id="closeModalBtn">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
+            <!--fills all when card is clicked-->
             <div class="modal-banner" id="mBanner"></div>
-        
         <div class="modal-body">
             <h2 id="mName"></h2>
 
             <div class="modal-meta" id="mMeta"></div>
+
+            <div class="verify-banner">
+          <i class="fa-solid fa-circle-check"></i>
+          Identity-verified seller · Condition ratings confirmed by buyers
+        </div>
 
             <p class="modal-desc" id="mDesc"></p>
 
@@ -340,5 +384,8 @@
             <div class="modal-actions" id="mActions"></div>
         </div>
     </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
