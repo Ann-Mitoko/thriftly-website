@@ -1,12 +1,4 @@
-// ===================================================
-// THRIFTLY — script.js
-// Complete frontend JavaScript
-// ===================================================
-
-
-// ---------------------------------------------------
-// 1. VENDOR DATA
-// ---------------------------------------------------
+//Vendor//
 
 const vendors = [
   {
@@ -114,19 +106,9 @@ const vendors = [
 ];
 
 
-// ---------------------------------------------------
-// 2. STATE — tracks what the user has selected
-// ---------------------------------------------------
-// These two variables remember the current filter
-// and user mode so filterVendors() can use them.
-
 let activeFilter = "All";
 let userMode = "buyer";
 
-
-// ---------------------------------------------------
-// 3. BANNER COLORS PER CATEGORY
-// ---------------------------------------------------
 
 const bannerColors = {
   Vintage:     "#f9e4c8",
@@ -136,13 +118,7 @@ const bannerColors = {
   Bulk:        "#dbeafe"
 };
 
-
-// ---------------------------------------------------
-// 4. RENDER CARDS
-// ---------------------------------------------------
-// Builds an HTML card for each vendor in the list
-// and injects them into the vendorGrid div.
-
+//Render Cards//
 function renderCards(vendorList) {
   const grid = document.getElementById("vendorGrid");
 
@@ -191,13 +167,7 @@ function renderCards(vendorList) {
     "Showing " + count + " stall" + (count !== 1 ? "s" : "");
 }
 
-
-// ---------------------------------------------------
-// 5. FILTER + SEARCH
-// ---------------------------------------------------
-// Runs every time a filter button is clicked OR
-// the user types in the search bar.
-// It filters the vendors array and re-renders cards.
+//Filter Search//
 
 function filterVendors() {
   const query = document.getElementById("searchInput").value.toLowerCase();
@@ -222,11 +192,6 @@ function filterVendors() {
   renderCards(filtered);
 }
 
-
-// ---------------------------------------------------
-// 6. SET FILTER (called by filter buttons)
-// ---------------------------------------------------
-
 function setFilter(filterName) {
   // Remember which filter is active
   activeFilter = filterName;
@@ -244,12 +209,7 @@ function setFilter(filterName) {
   // Re-render cards with the new filter applied
   filterVendors();
 }
-
-
-// ---------------------------------------------------
-// 7. BUYER / RESELLER TOGGLE
-// ---------------------------------------------------
-
+//Buyer/Seller toggle
 function setUserMode(mode) {
   userMode = mode;
 
@@ -259,45 +219,27 @@ function setUserMode(mode) {
   const searchInput = document.getElementById("searchInput");
 
   if (mode === "buyer") {
-    // Visually activate the buyer button
+    
     buyerBtn.classList.add("active");
     resellerBtn.classList.remove("active");
 
-    // Update the label above the vendor grid
     modeLabel.textContent = "Browsing as buyer";
-
-    // Update placeholder text
     searchInput.placeholder = "Search stalls, styles, or markets...";
-
-    // Show all categories
     setFilter("All");
 
   } else {
-    // Visually activate the reseller button
+   
     resellerBtn.classList.add("active");
     buyerBtn.classList.remove("active");
-
-    // Update the label
     modeLabel.textContent = "Sourcing stock as reseller";
 
-    // Update placeholder
     searchInput.placeholder = "Search bulk lots, bales, or markets...";
-
-    // Auto-filter to Bulk category
     setFilter("Bulk");
   }
 }
 
-
-// ---------------------------------------------------
-// 8. OPEN MODAL
-// ---------------------------------------------------
-// Called when a vendor card is clicked.
-// Finds the vendor by ID, fills in the modal content,
-// then shows the modal.
-
 function openModal(vendorId) {
-  // Find the vendor object that matches the clicked card
+  
   const vendor = vendors.find(function(v) {
     return v.id === vendorId;
   });
@@ -361,11 +303,6 @@ function openModal(vendorId) {
   document.body.style.overflow = "hidden";
 }
 
-
-// ---------------------------------------------------
-// 9. CLOSE MODAL
-// ---------------------------------------------------
-
 function closeModal() {
   document.getElementById("modal").classList.remove("open");
   document.body.style.overflow = "";
@@ -378,14 +315,7 @@ function closeModalOutside(event) {
     closeModal();
   }
 }
-
-
-// ---------------------------------------------------
-// 10. FORM SUBMISSION
-// ---------------------------------------------------
-// Validates required fields, shows success or error
-// message, and resets the form.
-
+//form submission
 function submitVendor(event) {
   // Prevent the default browser form submission
   // (which would reload the page)
@@ -431,10 +361,6 @@ function submitVendor(event) {
 }
 
 
-// ---------------------------------------------------
-// 11. MOBILE HAMBURGER MENU
-// ---------------------------------------------------
-
 const menuToggle = document.getElementById("menuToggle");
 const navLinks   = document.getElementById("navLinks");
 
@@ -451,20 +377,10 @@ if (menuToggle && navLinks) {
   });
 }
 
-
-// ---------------------------------------------------
-// 12. CLOSE MODAL WITH ESCAPE KEY
-// ---------------------------------------------------
-
 document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") {
     closeModal();
   }
 });
-
-
-// ---------------------------------------------------
-// 13. INITIALISE — runs when page first loads
-// ---------------------------------------------------
 
 renderCards(vendors);
