@@ -12,8 +12,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fraunces:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
 
 
-    <!--<link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">-->
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -263,7 +261,7 @@
             <h2>List your stall</h2>
             <p>Run a thrift stall in a Nairobi market? Get verified and discovered by thousands of buyers and resellers - free to join.</p>
 
-            <form id="vendorForm">
+            <form id="vendorForm" onsubmit="submitVendor(event)">
 
                 <div class="form-row">
                     <div class="form-group">
@@ -362,7 +360,7 @@
     <div class="modal-backdrop" id="modal"  onclick="closeModalOutside(event)">
         <div class="modal" id="modalContent">
 
-            <button class="close-btn" id="closeModalBtn">
+            <button class="close-btn" id="closeModalBtn" onclick="closeModal()" >
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
