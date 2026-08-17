@@ -1,110 +1,8 @@
 //Vendor//
 
-const vendors = [
-  {
-    id: 1,
-    name: "Mama Njeri's Closet",
-    owner: "Grace Njeri",
-    emoji: "👗",
-    category: "Vintage",
-    area: "Gikomba Market",
-    rating: 4.8,
-    reviews: 34,
-    price: "Ksh 150–800",
-    condition: "A",
-    desc: "Over 200 curated vintage pieces, hand-picked and quality-checked before listing. Specialises in 80s and 90s women's wear.",
-    phone: "+254 712 345 678",
-    instagram: "@mamanjeri_closet",
-    hours: "Mon–Sat, 9am–6pm",
-    bulk: false
-  },
-  {
-    id: 2,
-    name: "Fresh Threads KE",
-    owner: "Brian Otieno",
-    emoji: "🧢",
-    category: "Streetwear",
-    area: "Gikomba Market",
-    rating: 4.5,
-    reviews: 21,
-    price: "Ksh 200–1200",
-    condition: "B",
-    desc: "Streetwear and urban fashion from global thrift hauls. Jordans, hoodies, cargo pants — fresh drops every weekend.",
-    phone: "+254 798 001 234",
-    instagram: "@freshthreads_ke",
-    hours: "Daily, 10am–8pm",
-    bulk: false
-  },
-  {
-    id: 3,
-    name: "Little Threads",
-    owner: "Aisha Mohamed",
-    emoji: "👶",
-    category: "Kids",
-    area: "Eastleigh",
-    rating: 4.9,
-    reviews: 58,
-    price: "Ksh 50–400",
-    condition: "A",
-    desc: "Quality second-hand children's clothing from newborn to size 14. School uniforms, play clothes, and occasion wear all available.",
-    phone: "+254 735 678 901",
-    instagram: "@littlethreads_ke",
-    hours: "Mon–Fri, 8am–5pm",
-    bulk: false
-  },
-  {
-    id: 4,
-    name: "The Accessory Box",
-    owner: "Lydia Wambua",
-    emoji: "👜",
-    category: "Accessories",
-    area: "Toi Market",
-    rating: 4.6,
-    reviews: 17,
-    price: "Ksh 100–2000",
-    condition: "A",
-    desc: "Bags, belts, scarves and jewellery curated from high-end donations and vintage estates. Great for gifting.",
-    phone: "+254 722 456 789",
-    instagram: "@theaccessorybox",
-    hours: "Tue–Sun, 11am–7pm",
-    bulk: false
-  },
-  {
-    id: 5,
-    name: "Suit Up Thrift",
-    owner: "James Kariuki",
-    emoji: "👔",
-    category: "Bulk",
-    area: "Gikomba Market",
-    rating: 4.3,
-    reviews: 12,
-    price: "Bales from Ksh 12,000",
-    condition: "B",
-    desc: "Wholesale suits, blazers and dress shirts for resellers stocking office and event wear. Minimum order applies.",
-    phone: "+254 701 234 567",
-    instagram: "@suitup_thrift",
-    hours: "Mon–Fri, 6am–3pm",
-    bulk: true
-  },
-  {
-    id: 6,
-    name: "Retro Vibes",
-    owner: "Cynthia Oduya",
-    emoji: "✨",
-    category: "Vintage",
-    area: "Kilimani",
-    rating: 4.7,
-    reviews: 29,
-    price: "Ksh 300–1500",
-    condition: "A",
-    desc: "Y2K and retro pieces popular with students and content creators. Unique looks on a budget — new stock every Wednesday.",
-    phone: "+254 745 678 900",
-    instagram: "@retrovibes_nbi",
-    hours: "Wed–Sun, 10am–7pm",
-    bulk: false
-  }
-];
-
+// Vendors now load from the database via get_vendors.php instead of
+// being hardcoded here. This array just holds whatever the last fetch returned.
+let vendors = [];
 
 let activeFilter = "All";
 let userMode = "buyer";
@@ -321,13 +219,17 @@ function submitVendor(event) {
   // (which would reload the page)
   event.preventDefault();
 
-  const storeName = document.getElementById("storeName").value.trim();
-  const ownerName = document.getElementById("ownerName").value.trim();
-  const email     = document.getElementById("email").value.trim();
-  const phone     = document.getElementById("phone").value.trim();
-  const location  = document.getElementById("location").value.trim();
-  const category  = document.getElementById("category").value;
-  const storeDesc = document.getElementById("storeDesc").value.trim();
+  const storeName  = document.getElementById("storeName").value.trim();
+  const ownerName  = document.getElementById("ownerName").value.trim();
+  const email      = document.getElementById("email").value.trim();
+  const phone      = document.getElementById("phone").value.trim();
+  const instagram  = document.getElementById("instagram").value.trim();
+  const logoEmoji  = document.getElementById("logoEmoji").value.trim();
+  const location   = document.getElementById("location").value.trim();
+  const priceRange = document.getElementById("priceRange").value.trim();
+  const hours      = document.getElementById("hours").value.trim();
+  const category   = document.getElementById("category").value;
+  const storeDesc  = document.getElementById("storeDesc").value.trim();
 
   const successMsg = document.getElementById("formSuccess");
   const errorMsg   = document.getElementById("formError");
@@ -336,28 +238,50 @@ function submitVendor(event) {
   successMsg.style.display = "none";
   errorMsg.style.display   = "none";
 
-  // Check required fields
+  // Check required fields client-side first (fast feedback, no network call)
   if (!storeName || !ownerName || !email || !category) {
     errorMsg.style.display = "block";
     return;
   }
 
-  // All good — show success message
-  successMsg.style.display = "block";
+  // Send to the backend, which does the real validation + INSERT
+  const formData = new FormData();
+  formData.append("storeName", storeName);
+  formData.append("ownerName", ownerName);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("instagram", instagram);
+  formData.append("logoEmoji", logoEmoji);
+  formData.append("location", location);
+  formData.append("priceRange", priceRange);
+  formData.append("hours", hours);
+  formData.append("category", category);
+  formData.append("storeDesc", storeDesc);
 
-  // Clear the form fields
-  document.getElementById("storeName").value  = "";
-  document.getElementById("ownerName").value  = "";
-  document.getElementById("email").value      = "";
-  document.getElementById("phone").value      = "";
-  document.getElementById("location").value   = "";
-  document.getElementById("category").value   = "";
-  document.getElementById("storeDesc").value  = "";
+  fetch("submit_vendor.php", {
+    method: "POST",
+    body: formData
+  })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.error) {
+        errorMsg.textContent = "⚠️ " + data.error;
+        errorMsg.style.display = "block";
+        return;
+      }
 
-  // Auto-hide the success message after 5 seconds
-  setTimeout(function() {
-    successMsg.style.display = "none";
-  }, 5000);
+      // Success — show message and clear the form
+      successMsg.style.display = "block";
+      document.getElementById("vendorForm").reset();
+
+      setTimeout(function() {
+        successMsg.style.display = "none";
+      }, 5000);
+    })
+    .catch(function() {
+      errorMsg.textContent = "⚠️ Something went wrong. Please try again.";
+      errorMsg.style.display = "block";
+    });
 }
 
 
@@ -383,4 +307,24 @@ document.addEventListener("keydown", function(event) {
   }
 });
 
-renderCards(vendors);
+// Fetch verified vendors from the database and render once loaded
+function loadVendors() {
+  const grid = document.getElementById("vendorGrid");
+  grid.innerHTML = `<p style="color:#999; padding:2rem; grid-column:1/-1;">Loading stalls...</p>`;
+
+  fetch("get_vendors.php")
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.error) {
+        grid.innerHTML = `<p style="color:#c00; padding:2rem; grid-column:1/-1;">Couldn't load stalls: ${data.error}</p>`;
+        return;
+      }
+      vendors = data;
+      filterVendors(); // respects whatever filter/search is currently active
+    })
+    .catch(function() {
+      grid.innerHTML = `<p style="color:#c00; padding:2rem; grid-column:1/-1;">Couldn't reach the server. Is your PHP/MySQL server running?</p>`;
+    });
+}
+
+loadVendors();
