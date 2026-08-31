@@ -75,7 +75,38 @@ Team 5 needs to create new vendor reviews on Thriftly to allow verified buyers t
  Volume:Low, as the endpoint is only accessed when a buyer submits feedback.
  Authentication: Required, using an authenticated buyer session to ensure only eligible users can submit reviews.
                                   
-                                                        
+Statement 5: Single Vendor Profile
+Team 5 needs to retrieve a single vendor's full profile by ID
+from Thriftly in order to display complete stall details on
+their vendor detail page.
+
+Freshness: Near real-time — must reflect the latest
+  verified vendor information.
+Volume: Moderate — called each time a user opens a
+  vendor profile.
+Authentication: None required; public read-only access is sufficient.
+
+Statement 6: Vendor Search and Filter
+Team 5 needs to search and filter vendors by keyword, category,
+or market location from Thriftly in order to return relevant
+results for users actively searching the marketplace.
+
+Freshness: Near real-time — results must reflect current
+  verified vendors only.
+Volume: High — called on every search interaction.
+Authentication: None required; public read-only access is sufficient             
+
+ Statement 5: Categories
+Team 5 needs to retrieve all available product categories from
+Thriftly in order to populate category filter options on their
+marketplace browsing interface.
+
+Freshness: Static — categories change very rarely.
+Volume: Low — called once on page load.
+Authentication: None required; public read-only access is sufficient.
+
+
+
 Audit Alignment Gap
 
 Mapped Resources: The resources identified for integration, namely Vendors, Categories, Markets, and Reviews, map directly to Thriftly's Week 1 resource audit and support Team 5's marketplace workflows.
