@@ -96,7 +96,7 @@ Freshness: Near real-time — results must reflect current
 Volume: High — called on every search interaction.
 Authentication: None required; public read-only access is sufficient             
 
- Statement 5: Categories
+ Statement 7: Categories
 Team 5 needs to retrieve all available product categories from
 Thriftly in order to populate category filter options on their
 marketplace browsing interface.
