@@ -1,0 +1,357 @@
+openapi: 3.0.0
+info:
+  title: Thriftly API
+  version: 1.0.0
+
+paths:
+  /vendors:
+    get:
+      summary: Return all verified vendor profiles
+      operationId: listVendors
+      parameters:
+        - name: category
+          in: query
+          required: false
+          description: Filter vendors by product category
+          schema:
+            type: string
+            enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+            example: Vintage
+        - name: market
+          in: query
+          required: false
+          description: Filter vendors by physical market location
+          schema:
+            type: string
+            example: Gikomba
+      responses:
+        '200':
+          description: A list of verified vendor profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vendor'
+              example:
+                - id: "v_2291"
+                  name: "Mama Njeri Thrift"
+                  category: "Vintage"
+                  market: "Gikomba"
+                  phone: "+254712345678"
+                  email: "mamanjeri@thriftly.co.ke"
+                  verified: true
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /vendors/{id}:
+    get:
+      summary: Return a single vendor's full profile by ID
+      operationId: getVendorById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique vendor identifier
+          schema:
+            type: string
+            example: "v_2291"
+      responses:
+        '200':
+          description: The requested vendor's full profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+              example:
+                id: "v_2291"
+                name: "Mama Njeri Thrift"
+                category: "Vintage"
+                market: "Gikomba"
+                phone: "+254712345678"
+                email: "mamanjeri@thriftly.co.ke"
+                verified: true
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /products:
+    get:
+      summary: Return active product listings
+      operationId: listProducts
+      parameters:
+        - name: vendorId
+          in: query
+          required: false
+          description: Filter listings to a single vendor
+          schema:
+            type: string
+            example: "v_2291"
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+            example: Streetwear
+      responses:
+        '200':
+          description: A list of active product listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              example:
+                - id: "p_5581"
+                  vendorId: "v_2291"
+                  name: "Denim Jacket, Size M"
+                  category: "Vintage"
+                  price: 1200
+                  currency: "KES"
+                  quantityAvailable: 3
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /products/{id}:
+    get:
+      summary: Return a single product listing's full details by ID
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "p_5581"
+      responses:
+        '200':
+          description: The requested product listing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              example:
+                id: "p_5581"
+                vendorId: "v_2291"
+                name: "Denim Jacket, Size M"
+                category: "Vintage"
+                price: 1200
+                currency: "KES"
+                quantityAvailable: 3
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /purchases:
+    post:
+      summary: Create a purchase confirmation for a completed stock purchase
+      operationId: createPurchase
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseRequest'
+            example:
+              vendorId: "v_2291"
+              productId: "p_5581"
+              quantity: 2
+              totalAmount: 2400
+              currency: "KES"
+      responses:
+        '201':
+          description: Purchase confirmed and recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseConfirmation'
+              example:
+                id: "pc_9931"
+                referenceNumber: "THR-PC-99310"
+                vendorId: "v_2291"
+                productId: "p_5581"
+                quantity: 2
+                totalAmount: 2400
+                currency: "KES"
+                status: "confirmed"
+                createdAt: "2026-09-06T14:22:00Z"
+        '400':
+          description: Request body is missing required fields or has an invalid shape
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "invalid_request"
+                message: "quantity must be a positive integer"
+        '401':
+          description: Missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "unauthorized"
+                message: "Bearer token missing or expired"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Vendor:
+      type: object
+      required: [id, name, category, market, verified]
+      properties:
+        id:
+          type: string
+          example: "v_2291"
+        name:
+          type: string
+          example: "Mama Njeri Thrift"
+        category:
+          type: string
+          enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+          example: "Vintage"
+        market:
+          type: string
+          example: "Gikomba"
+        phone:
+          type: string
+          example: "+254712345678"
+        email:
+          type: string
+          format: email
+          example: "mamanjeri@thriftly.co.ke"
+        verified:
+          type: boolean
+          example: true
+
+    Product:
+      type: object
+      required: [id, vendorId, name, category, price, currency, quantityAvailable]
+      properties:
+        id:
+          type: string
+          example: "p_5581"
+        vendorId:
+          type: string
+          example: "v_2291"
+        name:
+          type: string
+          example: "Denim Jacket, Size M"
+        category:
+          type: string
+          enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+          example: "Vintage"
+        price:
+          type: number
+          format: float
+          example: 1200
+        currency:
+          type: string
+          example: "KES"
+        quantityAvailable:
+          type: integer
+          example: 3
+
+    PurchaseRequest:
+      type: object
+      required: [vendorId, productId, quantity, totalAmount, currency]
+      properties:
+        vendorId:
+          type: string
+          example: "v_2291"
+        productId:
+          type: string
+          example: "p_5581"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        totalAmount:
+          type: number
+          format: float
+          example: 2400
+        currency:
+          type: string
+          example: "KES"
+
+    PurchaseConfirmation:
+      type: object
+      required: [id, referenceNumber, vendorId, productId, quantity, totalAmount, currency, status, createdAt]
+      properties:
+        id:
+          type: string
+          example: "pc_9931"
+        referenceNumber:
+          type: string
+          example: "THR-PC-99310"
+        vendorId:
+          type: string
+          example: "v_2291"
+        productId:
+          type: string
+          example: "p_5581"
+        quantity:
+          type: integer
+          example: 2
+        totalAmount:
+          type: number
+          format: float
+          example: 2400
+        currency:
+          type: string
+          example: "KES"
+        status:
+          type: string
+          enum: [confirmed, failed]
+          example: "confirmed"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-09-06T14:22:00Z"
+
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          example: "invalid_request"
+        message:
+          type: string
+          example: "quantity must be a positive integer"
+
+  responses:
+    NotFound:
+      description: The requested resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "not_found"
+            message: "No vendor found with the given id"
+    ServerError:
+      description: An unexpected error occurred on the server
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "server_error"
+            message: "Something went wrong. Please try again."
