@@ -4,7 +4,7 @@ Team 4
 
 | Name           | Student Number | Starting Role       |
 
-| Ann Mitoko     | 220020         | API Lead            |
+| Ann Mitoko     | 220460         | API Lead            |
 | Natasha Mwangi | 221757         | Backend Developer   |
 |Jeremy Waiganjo | 220020         | Docs/DevOpsLead     |
 | Bradley Tirop  | 193641         | Integration/QA Lead |
