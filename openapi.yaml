@@ -93,7 +93,11 @@ paths:
           required: false
           schema:
             type: string
+<<<<<<< HEAD
             enum: [Vintage, Streetwear, Formal, Kids, Accessories]
+=======
+            enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+>>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
             example: Streetwear
       responses:
         '200':
@@ -224,7 +228,11 @@ components:
           example: "Mama Njeri Thrift"
         category:
           type: string
+<<<<<<< HEAD
           enum: [Vintage, Streetwear, Formal, Kids, Accessories]
+=======
+          enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+>>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
           example: "Vintage"
         market:
           type: string
@@ -255,7 +263,11 @@ components:
           example: "Denim Jacket, Size M"
         category:
           type: string
+<<<<<<< HEAD
           enum: [Vintage, Streetwear, Formal, Kids, Accessories]
+=======
+          enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
+>>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
           example: "Vintage"
         price:
           type: number

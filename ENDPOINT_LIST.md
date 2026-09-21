@@ -10,5 +10,9 @@ Team 4
 
 | GET     | /products/:id | Return a single product listing's full details by ID | Statement 2: Product Listings — used when staff reference one specific item's price/stock for a line item. |
 
+<<<<<<< HEAD
 | POST    | /purchases | Create a purchase confirmation for a completed stock purchase, returns a reference number | Statement 3: Purchase Confirmation — "Team 5 needs to create a purchase confirmation on Thriftly whenever their business completes a stock purchase, in order to generate a matching Expense entry with an accurate total and a reference number." |
 
+=======
+| POST    | /purchases | Create a purchase confirmation for a completed stock purchase, returns a reference number | Statement 3: Purchase Confirmation — "Team 5 needs to create a purchase confirmation on Thriftly whenever their business completes a stock purchase, in order to generate a matching Expense entry with an accurate total and a reference number." | 
+>>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
