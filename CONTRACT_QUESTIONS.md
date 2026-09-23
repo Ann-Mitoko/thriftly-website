@@ -1,3 +1,5 @@
+Team 4 Contract questions:
+
 Questions on PharmaLink API (Team 3) — openapi.yaml
 
 1. GET /pharmacies doesn't return a pharmacy ID, but every other endpoint requires one
