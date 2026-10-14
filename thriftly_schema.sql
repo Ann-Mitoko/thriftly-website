@@ -55,6 +55,33 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    vendor_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    category_id INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    quantity_available INT DEFAULT 0,
+
+    FOREIGN KEY (vendor_id) REFERENCES vendors(vendor_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
+CREATE TABLE purchases (
+    purchase_id INT AUTO_INCREMENT PRIMARY KEY,
+    reference_number VARCHAR(30) NOT NULL UNIQUE,
+    vendor_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(10) NOT NULL DEFAULT 'KES',
+    status ENUM('confirmed','failed') DEFAULT 'confirmed',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (vendor_id) REFERENCES vendors(vendor_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
 INSERT INTO categories (name, banner_color) VALUES
 ('Vintage', '#f9e4c8'),
 ('Streetwear', '#d1fae5'),
@@ -94,3 +121,36 @@ VALUES
 ('Retro Vibes', 'Cynthia Oduya', '✨', 1, 4, 'Ksh 300–1500', 'A',
  'Y2K and retro pieces popular with students and content creators. Unique looks on a budget — new stock every Wednesday.',
  '+254745678900', '@retrovibes_nbi', 'Wed–Sun, 10am–7pm', FALSE, 'verified', 'retrovibes@example.com');
+
+
+INSERT INTO products (vendor_id, name, category_id, price, quantity_available)
+VALUES
+  ((SELECT vendor_id FROM vendors WHERE name = "Mama Njeri's Closet"),
+   'Denim Jacket, Size M', (SELECT category_id FROM categories WHERE name = 'Vintage'), 750.00, 3),
+
+  ((SELECT vendor_id FROM vendors WHERE name = "Mama Njeri's Closet"),
+   'Floral Wrap Dress, Size S', (SELECT category_id FROM categories WHERE name = 'Vintage'), 500.00, 5),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'Fresh Threads KE'),
+   'Air Jordan 1 Retro, Size 42', (SELECT category_id FROM categories WHERE name = 'Streetwear'), 1200.00, 2),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'Fresh Threads KE'),
+   'Oversized Hoodie, Grey', (SELECT category_id FROM categories WHERE name = 'Streetwear'), 600.00, 8),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'Little Threads'),
+   'School Uniform Set, Size 8', (SELECT category_id FROM categories WHERE name = 'Kids'), 350.00, 6),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'Little Threads'),
+   'Toddler Play Romper', (SELECT category_id FROM categories WHERE name = 'Kids'), 200.00, 10),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'The Accessory Box'),
+   'Leather Crossbody Bag', (SELECT category_id FROM categories WHERE name = 'Accessories'), 1500.00, 4),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'The Accessory Box'),
+   'Vintage Silk Scarf', (SELECT category_id FROM categories WHERE name = 'Accessories'), 400.00, 7),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'Suit Up Thrift'),
+   'Charcoal Blazer, Size 42', (SELECT category_id FROM categories WHERE name = 'Bulk'), 1800.00, 12),
+
+  ((SELECT vendor_id FROM vendors WHERE name = 'Retro Vibes'),
+   'Y2K Cargo Pants', (SELECT category_id FROM categories WHERE name = 'Vintage'), 900.00, 5);

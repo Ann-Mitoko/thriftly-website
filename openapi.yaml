@@ -1,29 +1,22 @@
 openapi: 3.0.0
 info:
   title: Thriftly API
-  version: 1.0.0
+  description: 'API exposed by Thriftly (Team 4) for consumption by Team 5 (BillingSys_React). Covers
+    vendor and product listing lookups for supplier/expense onboarding, and purchase confirmation for
+    completed stock purchases.
 
+    '
+  version: 1.0.0
+  license:
+    name: MIT
+servers:
+- url: http://localhost:5000
+  description: Local development server
 paths:
   /vendors:
     get:
       summary: Return all verified vendor profiles
       operationId: listVendors
-      parameters:
-        - name: category
-          in: query
-          required: false
-          description: Filter vendors by product category
-          schema:
-            type: string
-            enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
-            example: Vintage
-        - name: market
-          in: query
-          required: false
-          description: Filter vendors by physical market location
-          schema:
-            type: string
-            example: Gikomba
       responses:
         '200':
           description: A list of verified vendor profiles
@@ -34,28 +27,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/Vendor'
               example:
-                - id: "v_2291"
-                  name: "Mama Njeri Thrift"
-                  category: "Vintage"
-                  market: "Gikomba"
-                  phone: "+254712345678"
-                  email: "mamanjeri@thriftly.co.ke"
-                  verified: true
+              - id: 1
+                name: Mama Njeri's Closet
+                category: Vintage
+                market: Gikomba Market
+                phone: '+254712345678'
+                email: mamanjeri@example.com
+                verified: true
         '500':
           $ref: '#/components/responses/ServerError'
-
+      security: []
   /vendors/{id}:
     get:
       summary: Return a single vendor's full profile by ID
       operationId: getVendorById
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Unique vendor identifier
-          schema:
-            type: string
-            example: "v_2291"
+      - name: id
+        in: path
+        required: true
+        description: Unique vendor identifier
+        schema:
+          type: integer
+          example: 1
       responses:
         '200':
           description: The requested vendor's full profile
@@ -64,41 +57,107 @@ paths:
               schema:
                 $ref: '#/components/schemas/Vendor'
               example:
-                id: "v_2291"
-                name: "Mama Njeri Thrift"
-                category: "Vintage"
-                market: "Gikomba"
-                phone: "+254712345678"
-                email: "mamanjeri@thriftly.co.ke"
+                id: 1
+                name: Mama Njeri's Closet
+                category: Vintage
+                market: Gikomba Market
+                phone: '+254712345678'
+                email: mamanjeri@example.com
                 verified: true
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-
+      security: []
+    put:
+      summary: Update a vendor's profile
+      operationId: updateVendor
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorUpdateRequest'
+            example:
+              name: Mama Njeri's Closet
+              category: Vintage
+              market: Gikomba Market
+              phone: '+254712345678'
+              email: mamanjeri@example.com
+              verified: true
+      responses:
+        '200':
+          description: The updated vendor profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Request body is missing required fields or has an invalid shape
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      description: NOT YET IMPLEMENTED in v1.0.0 — this endpoint is part of the planned contract only.
+        Calling it currently returns 404.
+    delete:
+      summary: Delete a vendor
+      operationId: deleteVendor
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+      responses:
+        '204':
+          description: Vendor deleted successfully, no content returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      description: NOT YET IMPLEMENTED in v1.0.0 — this endpoint is part of the planned contract only.
+        Calling it currently returns 404.
   /products:
     get:
       summary: Return active product listings
       operationId: listProducts
       parameters:
-        - name: vendorId
-          in: query
-          required: false
-          description: Filter listings to a single vendor
-          schema:
-            type: string
-            example: "v_2291"
-        - name: category
-          in: query
-          required: false
-          schema:
-            type: string
-<<<<<<< HEAD
-            enum: [Vintage, Streetwear, Formal, Kids, Accessories]
-=======
-            enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
->>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
-            example: Streetwear
+      - name: vendorId
+        in: query
+        required: false
+        description: Filter listings to a single vendor
+        schema:
+          type: integer
+          example: 1
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - Vintage
+          - Streetwear
+          - Kids
+          - Accessories
+          - Bulk
+          example: Streetwear
       responses:
         '200':
           description: A list of active product listings
@@ -109,27 +168,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
               example:
-                - id: "p_5581"
-                  vendorId: "v_2291"
-                  name: "Denim Jacket, Size M"
-                  category: "Vintage"
-                  price: 1200
-                  currency: "KES"
-                  quantityAvailable: 3
+              - id: 1
+                vendorId: 1
+                name: Denim Jacket, Size M
+                category: Vintage
+                price: 750
+                currency: KES
+                quantityAvailable: 3
         '500':
           $ref: '#/components/responses/ServerError'
-
+      security: []
   /products/{id}:
     get:
       summary: Return a single product listing's full details by ID
       operationId: getProductById
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: "p_5581"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
       responses:
         '200':
           description: The requested product listing
@@ -138,24 +197,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
               example:
-                id: "p_5581"
-                vendorId: "v_2291"
-                name: "Denim Jacket, Size M"
-                category: "Vintage"
-                price: 1200
-                currency: "KES"
+                id: 1
+                vendorId: 1
+                name: Denim Jacket, Size M
+                category: Vintage
+                price: 750
+                currency: KES
                 quantityAvailable: 3
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-
+      security: []
+    put:
+      summary: Update a product listing
+      operationId: updateProduct
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateRequest'
+            example:
+              name: Denim Jacket, Size M
+              category: Vintage
+              price: 750
+              currency: KES
+              quantityAvailable: 3
+      responses:
+        '200':
+          description: The updated product listing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Request body is missing required fields or has an invalid shape
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      description: NOT YET IMPLEMENTED in v1.0.0 — this endpoint is part of the planned contract only.
+        Calling it currently returns 404.
+    delete:
+      summary: Delete a product listing
+      operationId: deleteProduct
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          example: 1
+      responses:
+        '204':
+          description: Product deleted successfully, no content returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      description: NOT YET IMPLEMENTED in v1.0.0 — this endpoint is part of the planned contract only.
+        Calling it currently returns 404.
   /purchases:
     post:
       summary: Create a purchase confirmation for a completed stock purchase
       operationId: createPurchase
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -163,11 +286,11 @@ paths:
             schema:
               $ref: '#/components/schemas/PurchaseRequest'
             example:
-              vendorId: "v_2291"
-              productId: "p_5581"
-              quantity: 2
-              totalAmount: 2400
-              currency: "KES"
+              vendorId: 5
+              productId: 9
+              quantity: 1
+              totalAmount: 1800
+              currency: KES
       responses:
         '201':
           description: Purchase confirmed and recorded
@@ -176,24 +299,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/PurchaseConfirmation'
               example:
-                id: "pc_9931"
-                referenceNumber: "THR-PC-99310"
-                vendorId: "v_2291"
-                productId: "p_5581"
-                quantity: 2
-                totalAmount: 2400
-                currency: "KES"
-                status: "confirmed"
-                createdAt: "2026-09-06T14:22:00Z"
+                id: '1'
+                referenceNumber: THR-PC-8F8F3C94
+                vendorId: 5
+                productId: 9
+                quantity: 1
+                totalAmount: 1800
+                currency: KES
+                status: confirmed
+                createdAt: '2026-10-12T06:29:23Z'
         '400':
-          description: Request body is missing required fields or has an invalid shape
+          description: Missing/invalid field (vendorId, productId, quantity, totalAmount, currency), or
+            quantity exceeds available stock
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                error: "invalid_request"
-                message: "quantity must be a positive integer"
+                error: invalid_request
+                message: quantity must be a positive integer
         '401':
           description: Missing or invalid authentication token
           content:
@@ -201,153 +325,281 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
               example:
-                error: "unauthorized"
-                message: "Bearer token missing or expired"
+                error: unauthorized
+                message: Bearer token missing or expired
+        '404':
+          description: No vendor with that vendorId, or no product with that productId belonging to that
+            vendor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: not_found
+                message: No vendor found with the given vendorId
+        '500':
+          $ref: '#/components/responses/ServerError'
+      description: 'Records a confirmed stock purchase and reduces the product''s available stock by the
+        purchased quantity. The product must belong to the given vendor. Requires the header `Authorization:
+        Bearer thriftly-dev-token-2026` (placeholder token until real auth is built).'
+  /purchases/{id}:
+    get:
+      summary: Look up a purchase confirmation by ID
+      operationId: getPurchaseById
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: '1'
+      responses:
+        '200':
+          description: The requested purchase confirmation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseConfirmation'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-
+      description: NOT YET IMPLEMENTED in v1.0.0 — this endpoint is part of the planned contract only.
+        Calling it currently returns 404.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
   schemas:
     Vendor:
       type: object
-      required: [id, name, category, market, verified]
+      required:
+      - id
+      - name
+      - category
+      - market
+      - verified
       properties:
         id:
-          type: string
-          example: "v_2291"
+          type: integer
+          example: 1
         name:
           type: string
-          example: "Mama Njeri Thrift"
+          example: Mama Njeri's Closet
         category:
           type: string
-<<<<<<< HEAD
-          enum: [Vintage, Streetwear, Formal, Kids, Accessories]
-=======
-          enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
->>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
-          example: "Vintage"
+          enum:
+          - Vintage
+          - Streetwear
+          - Kids
+          - Accessories
+          - Bulk
+          example: Vintage
         market:
           type: string
-          example: "Gikomba"
+          example: Gikomba Market
         phone:
           type: string
-          example: "+254712345678"
+          example: '+254712345678'
         email:
           type: string
           format: email
-          example: "mamanjeri@thriftly.co.ke"
+          example: mamanjeri@example.com
         verified:
           type: boolean
           example: true
-
-    Product:
+    VendorUpdateRequest:
       type: object
-      required: [id, vendorId, name, category, price, currency, quantityAvailable]
+      required:
+      - name
+      - category
+      - market
+      - phone
+      - email
+      - verified
       properties:
-        id:
-          type: string
-          example: "p_5581"
-        vendorId:
-          type: string
-          example: "v_2291"
         name:
           type: string
-          example: "Denim Jacket, Size M"
+          example: Mama Njeri's Closet
         category:
           type: string
-<<<<<<< HEAD
-          enum: [Vintage, Streetwear, Formal, Kids, Accessories]
-=======
-          enum: [Vintage, Streetwear, Kids, Accessories, Bulk]
->>>>>>> e361f1de6a73eea4050dcaf755f374934e8fd33b
-          example: "Vintage"
+          enum:
+          - Vintage
+          - Streetwear
+          - Kids
+          - Accessories
+          - Bulk
+          example: Vintage
+        market:
+          type: string
+          example: Gikomba Market
+        phone:
+          type: string
+          example: '+254712345678'
+        email:
+          type: string
+          format: email
+          example: mamanjeri@example.com
+        verified:
+          type: boolean
+          example: true
+    ProductUpdateRequest:
+      type: object
+      required:
+      - name
+      - category
+      - price
+      - currency
+      - quantityAvailable
+      properties:
+        name:
+          type: string
+          example: Denim Jacket, Size M
+        category:
+          type: string
+          enum:
+          - Vintage
+          - Streetwear
+          - Kids
+          - Accessories
+          - Bulk
+          example: Vintage
         price:
           type: number
           format: float
-          example: 1200
+          example: 750
         currency:
           type: string
-          example: "KES"
+          example: KES
         quantityAvailable:
           type: integer
           example: 3
-
+    Product:
+      type: object
+      required:
+      - id
+      - vendorId
+      - name
+      - category
+      - price
+      - currency
+      - quantityAvailable
+      properties:
+        id:
+          type: integer
+          example: 1
+        vendorId:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Denim Jacket, Size M
+        category:
+          type: string
+          enum:
+          - Vintage
+          - Streetwear
+          - Kids
+          - Accessories
+          - Bulk
+          example: Vintage
+        price:
+          type: number
+          format: float
+          example: 750
+        currency:
+          type: string
+          example: KES
+        quantityAvailable:
+          type: integer
+          example: 3
     PurchaseRequest:
       type: object
-      required: [vendorId, productId, quantity, totalAmount, currency]
+      required:
+      - vendorId
+      - productId
+      - quantity
+      - totalAmount
+      - currency
       properties:
         vendorId:
-          type: string
-          example: "v_2291"
+          type: integer
+          example: 5
         productId:
-          type: string
-          example: "p_5581"
+          type: integer
+          example: 9
         quantity:
           type: integer
           minimum: 1
-          example: 2
+          example: 1
         totalAmount:
           type: number
           format: float
-          example: 2400
+          example: 1800
         currency:
           type: string
-          example: "KES"
-
+          example: KES
     PurchaseConfirmation:
       type: object
-      required: [id, referenceNumber, vendorId, productId, quantity, totalAmount, currency, status, createdAt]
+      required:
+      - id
+      - referenceNumber
+      - vendorId
+      - productId
+      - quantity
+      - totalAmount
+      - currency
+      - status
+      - createdAt
       properties:
         id:
           type: string
-          example: "pc_9931"
+          example: '1'
         referenceNumber:
           type: string
-          example: "THR-PC-99310"
+          example: THR-PC-8F8F3C94
         vendorId:
-          type: string
-          example: "v_2291"
+          type: integer
+          example: 5
         productId:
-          type: string
-          example: "p_5581"
+          type: integer
+          example: 9
         quantity:
           type: integer
-          example: 2
+          example: 1
         totalAmount:
           type: number
           format: float
-          example: 2400
+          example: 1800
         currency:
           type: string
-          example: "KES"
+          example: KES
         status:
           type: string
-          enum: [confirmed, failed]
-          example: "confirmed"
+          enum:
+          - confirmed
+          - failed
+          example: confirmed
         createdAt:
           type: string
           format: date-time
-          example: "2026-09-06T14:22:00Z"
-
+          example: '2026-10-12T06:29:23Z'
     Error:
       type: object
-      required: [error, message]
+      required:
+      - error
+      - message
       properties:
         error:
           type: string
-          example: "invalid_request"
+          example: invalid_request
         message:
           type: string
-          example: "quantity must be a positive integer"
-
+          example: quantity must be a positive integer
   responses:
     NotFound:
       description: The requested resource does not exist
@@ -356,8 +608,8 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            error: "not_found"
-            message: "No vendor found with the given id"
+            error: not_found
+            message: No vendor found with the given id
     ServerError:
       description: An unexpected error occurred on the server
       content:
@@ -365,5 +617,5 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            error: "server_error"
-            message: "Something went wrong. Please try again."
+            error: server_error
+            message: Something went wrong. Please try again.

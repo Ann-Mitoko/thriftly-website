@@ -1,7 +1,7 @@
 <?php
 // submit_vendor.php
 // Handles the "List your stall" form. Inserts as status='pending' -
-// it will NOT show up in get_vendors.php until manually verified.
+
 
 require_once "db_connect.php";
 header('Content-Type: application/json');

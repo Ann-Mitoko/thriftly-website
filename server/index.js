@@ -12,11 +12,9 @@ app.get('/', (req, res) => {
   res.send('API is running');
 });
 
-const vendorRoutes = require('./routes/vendors');
-app.use('/vendors', vendorRoutes);
-
-const productRoutes = require('./routes/products');
-app.use('/products', productRoutes);
+app.use('/vendors', require('./routes/vendors'));
+app.use('/products', require('./routes/products'));
+app.use('/purchases', require('./routes/purchases'));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

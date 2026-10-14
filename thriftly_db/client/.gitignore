@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+.env
+thriftly_db/
 /.pnp
 .pnp.js
 
