@@ -43,7 +43,9 @@ no drift found.
 No deviations found in: field naming/casing, data types, or status code behavior for the
 implemented endpoints — those all matched the contract as written.
 
+---
 
+Week 6 additions (POST /purchases)
 
 5. Authentication implemented as a shared token, not real bearer/JWT auth
 
@@ -80,6 +82,13 @@ implemented, and their inclusion is an honest gap: added speculatively, not from
 need. GET /purchases/{id} was also added and is considered legitimate (a natural companion to
 creating a purchase confirmation), but it is likewise not yet implemented.
 
+---
+
+Week 8 corrections (found by running the Week 8 quickstart against the live API)
+
+These are changes to openapi.yaml made AFTER the contract was sent to Team 5 in Week 4.
+Team 5 must be told directly — they built against the earlier version.
+
 9. IDs changed from string to integer
 
 The Week 4 contract typed vendor and product ids as strings with examples like "v_2291" and
@@ -112,3 +121,53 @@ and products.js now return {"error": "not_found" | "server_error", "message": ".
 PUT/DELETE on /vendors/{id} and /products/{id}, and GET /purchases/{id}, remain in the contract
 (see #8) but are labelled "NOT YET IMPLEMENTED" in the docs site and README so a reader doesn't
 try them and fail. Calling them returns Express's default HTML 404, not the JSON error format.
+
+---
+
+Team 5 contract review (their Week 4 questions, answered)
+
+Team 5 reviewed openapi.yaml against what BillingSys actually needs: supplier info (name, address,
+email, phone, speciality), product info for their catalog (name, brand, price), and purchase trend
+data (brand, quantity, price, name). Unlike entry 8, every change below comes from a confirmed
+consumer need. All of them are ADDITIVE: new optional-to-read fields and one new endpoint, so
+nothing Team 5 already built against the Week 4 contract breaks.
+
+14. Vendor.description added (answers their "speciality" question)
+
+Thriftly has no separate speciality field, but every vendor has a free-text description that
+says what they specialise in (e.g. "Specialises in 80s and 90s women's wear"). It is now returned
+as "description" on GET /vendors and GET /vendors/{id}. It is a sentence, not a fixed label.
+
+15. Vendor address NOT added (decision: not provided)
+
+Thriftly stores no street address for vendors. They trade from stalls inside markets (Gikomba
+Market, Toi Market, Eastleigh, Kilimani), and the only location data is the market name, which
+is already returned as "market". Inventing an address would put false data in Team 5's supplier
+records. If Team 5 needs a finer location, the fix is collecting it (for example a stall or
+section field in the vendor signup form), which is a data change, not an API change.
+
+16. Product.brand added (nullable)
+
+A nullable brand column was added to products and is returned as "brand" on GET /products and
+GET /products/{id}. It is null for unbranded items, which is common in second-hand stock, so
+Team 5 must handle null. Existing databases need this one-time change:
+
+    ALTER TABLE products ADD COLUMN brand VARCHAR(100) NULL;
+
+The brand values in thriftly_schema.sql are demo data, not real stock records.
+
+17. GET /purchases added (answers "no read endpoint for purchase data")
+
+Returns purchase history, newest first, with productName, brand, quantity, unitPrice,
+totalAmount, currency, status and createdAt. Optional filters: vendorId, productId, from, to.
+Things Team 5 should know:
+- productName and brand are the product's CURRENT values, not a snapshot from purchase time.
+- unitPrice is derived: totalAmount divided by quantity, rounded to 2 decimals.
+- It requires the same placeholder bearer token as POST /purchases (see entry 5), so anyone
+  holding that shared token can read every purchase. Acceptable for now, not for production.
+- There is no pagination; it returns every matching row.
+
+18. Needs documents updated to match
+
+API_NEEDS.md (Team 5 section) and ENDPOINT_LIST.md were updated with the new fields and a
+"Purchase History" needs statement, so the new endpoint traces back to a real need.

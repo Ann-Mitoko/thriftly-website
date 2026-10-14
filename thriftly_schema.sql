@@ -55,6 +55,8 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Added Week 5: individual product listings, one level below a vendor's price_range.
+-- Backs the GET /products and GET /products/{id} endpoints in openapi.yaml.
 CREATE TABLE products (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     vendor_id INT NOT NULL,
@@ -62,11 +64,13 @@ CREATE TABLE products (
     category_id INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     quantity_available INT DEFAULT 0,
+    brand VARCHAR(100) NULL,           -- Added Week 8: optional, many thrift items are unbranded
 
     FOREIGN KEY (vendor_id) REFERENCES vendors(vendor_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
+-- Added Week 6: confirmed stock purchases, backs POST /purchases.
 CREATE TABLE purchases (
     purchase_id INT AUTO_INCREMENT PRIMARY KEY,
     reference_number VARCHAR(30) NOT NULL UNIQUE,
@@ -122,35 +126,36 @@ VALUES
  'Y2K and retro pieces popular with students and content creators. Unique looks on a budget — new stock every Wednesday.',
  '+254745678900', '@retrovibes_nbi', 'Wed–Sun, 10am–7pm', FALSE, 'verified', 'retrovibes@example.com');
 
-
-INSERT INTO products (vendor_id, name, category_id, price, quantity_available)
+-- Added Week 5: sample product listings, one to two per vendor.
+-- Brand values (Week 8) are DEMO data; NULL means unbranded.
+INSERT INTO products (vendor_id, name, category_id, price, quantity_available, brand)
 VALUES
   ((SELECT vendor_id FROM vendors WHERE name = "Mama Njeri's Closet"),
-   'Denim Jacket, Size M', (SELECT category_id FROM categories WHERE name = 'Vintage'), 750.00, 3),
+   'Denim Jacket, Size M', (SELECT category_id FROM categories WHERE name = 'Vintage'), 750.00, 3, "Levi's"),
 
   ((SELECT vendor_id FROM vendors WHERE name = "Mama Njeri's Closet"),
-   'Floral Wrap Dress, Size S', (SELECT category_id FROM categories WHERE name = 'Vintage'), 500.00, 5),
+   'Floral Wrap Dress, Size S', (SELECT category_id FROM categories WHERE name = 'Vintage'), 500.00, 5, NULL),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'Fresh Threads KE'),
-   'Air Jordan 1 Retro, Size 42', (SELECT category_id FROM categories WHERE name = 'Streetwear'), 1200.00, 2),
+   'Air Jordan 1 Retro, Size 42', (SELECT category_id FROM categories WHERE name = 'Streetwear'), 1200.00, 2, 'Nike'),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'Fresh Threads KE'),
-   'Oversized Hoodie, Grey', (SELECT category_id FROM categories WHERE name = 'Streetwear'), 600.00, 8),
+   'Oversized Hoodie, Grey', (SELECT category_id FROM categories WHERE name = 'Streetwear'), 600.00, 8, 'Champion'),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'Little Threads'),
-   'School Uniform Set, Size 8', (SELECT category_id FROM categories WHERE name = 'Kids'), 350.00, 6),
+   'School Uniform Set, Size 8', (SELECT category_id FROM categories WHERE name = 'Kids'), 350.00, 6, NULL),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'Little Threads'),
-   'Toddler Play Romper', (SELECT category_id FROM categories WHERE name = 'Kids'), 200.00, 10),
+   'Toddler Play Romper', (SELECT category_id FROM categories WHERE name = 'Kids'), 200.00, 10, NULL),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'The Accessory Box'),
-   'Leather Crossbody Bag', (SELECT category_id FROM categories WHERE name = 'Accessories'), 1500.00, 4),
+   'Leather Crossbody Bag', (SELECT category_id FROM categories WHERE name = 'Accessories'), 1500.00, 4, 'Michael Kors'),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'The Accessory Box'),
-   'Vintage Silk Scarf', (SELECT category_id FROM categories WHERE name = 'Accessories'), 400.00, 7),
+   'Vintage Silk Scarf', (SELECT category_id FROM categories WHERE name = 'Accessories'), 400.00, 7, NULL),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'Suit Up Thrift'),
-   'Charcoal Blazer, Size 42', (SELECT category_id FROM categories WHERE name = 'Bulk'), 1800.00, 12),
+   'Charcoal Blazer, Size 42', (SELECT category_id FROM categories WHERE name = 'Bulk'), 1800.00, 12, NULL),
 
   ((SELECT vendor_id FROM vendors WHERE name = 'Retro Vibes'),
-   'Y2K Cargo Pants', (SELECT category_id FROM categories WHERE name = 'Vintage'), 900.00, 5);
+   'Y2K Cargo Pants', (SELECT category_id FROM categories WHERE name = 'Vintage'), 900.00, 5, 'Dickies');

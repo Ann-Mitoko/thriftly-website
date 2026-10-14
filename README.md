@@ -19,7 +19,7 @@ curl http://localhost:5000/vendors/5
 You should get back:
 
 ```json
-{"id":5,"name":"Suit Up Thrift","category":"Bulk","market":"Gikomba Market","phone":"+254701234567","email":"suitup@example.com","verified":true}
+{"id":5,"name":"Suit Up Thrift","category":"Bulk","market":"Gikomba Market","description":"Wholesale suits, blazers and dress shirts for resellers stocking office and event wear. Minimum order applies.","phone":"+254701234567","email":"suitup@example.com","verified":true}
 ```
 
 If you see that, everything works. If you get `Failed to connect` or `Connection refused`, the server isn't running yet — go to [Run it locally](#run-it-locally).
@@ -31,9 +31,9 @@ If you see that, everything works. If you get `Failed to connect` or `Connection
 | Endpoint type | Token needed? |
 |---|---|
 | `GET` endpoints (vendors, products) | **No** — public, read-only |
-| `POST /purchases` | **Yes** |
+| `POST /purchases` and `GET /purchases` | **Yes** |
 
-For `POST /purchases`, send this header on every request:
+For `/purchases`, send this header on every request:
 
 ```
 Authorization: Bearer thriftly-dev-token-2026
@@ -52,6 +52,7 @@ Authorization: Bearer thriftly-dev-token-2026
 | GET | `/products` | List products (optional filters) | ✅ Working |
 | GET | `/products/{id}` | One product by ID | ✅ Working |
 | POST | `/purchases` | Record a confirmed purchase | ✅ Working |
+| GET | `/purchases` | Purchase history (optional filters) | ✅ Working |
 | PUT, DELETE | `/vendors/{id}`, `/products/{id}` | Update / delete | ⏳ Planned — **not built** |
 | GET | `/purchases/{id}` | Look up a past purchase | ⏳ Planned — **not built** |
 
@@ -76,6 +77,7 @@ Returns an array of all verified vendors, sorted by name. First item shown:
     "name": "Fresh Threads KE",
     "category": "Streetwear",
     "market": "Gikomba Market",
+    "description": "Streetwear and urban fashion from global thrift hauls. Jordans, hoodies, cargo pants â€” fresh drops every weekend.",
     "phone": "+254798001234",
     "email": "freshthreads@example.com",
     "verified": true
@@ -84,6 +86,8 @@ Returns an array of all verified vendors, sorted by name. First item shown:
 ```
 
 `category` is one of `Vintage`, `Streetwear`, `Kids`, `Accessories`, `Bulk`.
+
+`description` says what the vendor specialises in. There is **no street address**: vendors trade from market stalls, so `market` is the location Thriftly has.
 
 ### Get one vendor
 
@@ -94,7 +98,7 @@ curl http://localhost:5000/vendors/5
 → `200 OK`
 
 ```json
-{"id":5,"name":"Suit Up Thrift","category":"Bulk","market":"Gikomba Market","phone":"+254701234567","email":"suitup@example.com","verified":true}
+{"id":5,"name":"Suit Up Thrift","category":"Bulk","market":"Gikomba Market","description":"Wholesale suits, blazers and dress shirts for resellers stocking office and event wear. Minimum order applies.","phone":"+254701234567","email":"suitup@example.com","verified":true}
 ```
 
 ### List products
@@ -103,12 +107,12 @@ curl http://localhost:5000/vendors/5
 curl "http://localhost:5000/products?category=Kids"
 ```
 
-Optional filters: `category` (same values as above) and `vendorId` (integer). → `200 OK`
+Optional filters: `category` (same values as above) and `vendorId` (integer). `brand` is `null` for unbranded items. → `200 OK`
 
 ```json
 [
-  {"id":5,"vendorId":3,"name":"School Uniform Set, Size 8","category":"Kids","price":350,"currency":"KES","quantityAvailable":6},
-  {"id":6,"vendorId":3,"name":"Toddler Play Romper","category":"Kids","price":200,"currency":"KES","quantityAvailable":10}
+  {"id":5,"vendorId":3,"name":"School Uniform Set, Size 8","category":"Kids","brand":null,"price":350,"currency":"KES","quantityAvailable":6},
+  {"id":6,"vendorId":3,"name":"Toddler Play Romper","category":"Kids","brand":null,"price":200,"currency":"KES","quantityAvailable":10}
 ]
 ```
 
@@ -121,7 +125,7 @@ curl http://localhost:5000/products/9
 → `200 OK`
 
 ```json
-{"id":9,"vendorId":5,"name":"Charcoal Blazer, Size 42","category":"Bulk","price":1800,"currency":"KES","quantityAvailable":12}
+{"id":9,"vendorId":5,"name":"Charcoal Blazer, Size 42","category":"Bulk","brand":null,"price":1800,"currency":"KES","quantityAvailable":12}
 ```
 
 ### Record a purchase
@@ -159,6 +163,58 @@ Your `referenceNumber`, `id` and `createdAt` will differ. Request body fields (a
 
 > **A purchase changes data.** Each successful call reduces that product's `quantityAvailable` by `quantity`. The Charcoal Blazer starts with 12, so the example above works 12 times before it's out of stock (then you'll get a `400`). To reset the data, see [Reset the database](#reset-the-database).
 
+### List purchase history
+
+```bash
+curl http://localhost:5000/purchases -H "Authorization: Bearer thriftly-dev-token-2026"
+```
+
+Returns every recorded purchase, newest first. Each record includes the product's current `productName` and `brand` (`null` if unbranded) and a `unitPrice` (`totalAmount` ÷ `quantity`). → `200 OK`
+
+```json
+[
+  {
+    "id": "2",
+    "referenceNumber": "THR-PC-5517FA9B",
+    "vendorId": 1,
+    "productId": 1,
+    "productName": "Denim Jacket, Size M",
+    "brand": "Levi's",
+    "quantity": 2,
+    "unitPrice": 750,
+    "totalAmount": 1500,
+    "currency": "KES",
+    "status": "confirmed",
+    "createdAt": "2026-10-14T19:08:16.000Z"
+  },
+  {
+    "id": "1",
+    "referenceNumber": "THR-PC-6CB6384E",
+    "vendorId": 5,
+    "productId": 9,
+    "productName": "Charcoal Blazer, Size 42",
+    "brand": null,
+    "quantity": 1,
+    "unitPrice": 1800,
+    "totalAmount": 1800,
+    "currency": "KES",
+    "status": "confirmed",
+    "createdAt": "2026-10-14T19:08:16.000Z"
+  }
+]
+```
+
+`id`, `referenceNumber` and `createdAt` will differ on your machine. Optional filters, which can be combined:
+
+| Query parameter | Type | Meaning |
+|---|---|---|
+| `vendorId` | integer | Only purchases from this vendor |
+| `productId` | integer | Only purchases of this product |
+| `from` | date or date-time | Only purchases at or after this moment, e.g. `2026-10-01` |
+| `to` | date or date-time | Only purchases at or before this moment |
+
+Example: `curl "http://localhost:5000/purchases?vendorId=5" -H "Authorization: Bearer thriftly-dev-token-2026"`. No matches gives `200` with an empty array `[]`. A non-numeric `vendorId` or an unreadable date gives `400`.
+
 ---
 
 ## Errors
@@ -173,8 +229,8 @@ Every error from the working endpoints has the same shape:
 
 | Status | `error` | When it happens | Example `message` |
 |---|---|---|---|
-| 400 | `invalid_request` | Missing field, wrong type, or quantity above stock (`POST /purchases`) | `totalAmount is required` |
-| 401 | `unauthorized` | Missing or wrong token (`POST /purchases`) | `Bearer token missing or invalid` |
+| 400 | `invalid_request` | Missing field, wrong type, or quantity above stock (`POST /purchases`); bad filter value (`GET /purchases`) | `totalAmount is required` |
+| 401 | `unauthorized` | Missing or wrong token (any `/purchases` request) | `Bearer token missing or invalid` |
 | 404 | `not_found` | ID doesn't exist | `No vendor found with the given id` |
 | 405 | `method_not_allowed` | Wrong HTTP method on `/purchases` | `Only POST is supported on this endpoint` |
 | 500 | `server_error` | Something broke on our side (e.g. database down) | `Failed to fetch vendors` |

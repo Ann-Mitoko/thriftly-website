@@ -45,7 +45,7 @@ Note: Team 5's app, BillingSys_React, is a business billing/invoicing management
 
 Statement 1: Vendor Directory
 
-Team 5 needs to retrieve verified vendor profiles (name, contact details, category/speciality) from Thriftly in order to auto-populate a Supplier record when their business onboards a Thriftly vendor as a stock source.
+Team 5 needs to retrieve verified vendor profiles (name, contact details, category, and a description of what the vendor specialises in) from Thriftly in order to auto-populate a Supplier record when their business onboards a Thriftly vendor as a stock source.
 
 Freshness: Low frequency, as vendor profile details change infrequently.
 Volume: Low, accessed only when staff onboard a new supplier.
@@ -53,7 +53,7 @@ Authentication: None required for reading public vendor profile fields.
 
 Statement 2: Product Listings
 
-Team 5 needs to retrieve active product listings (name, category, price, available quantity) from Thriftly in order to reference current pricing and stock when staff create an Invoice or Expense line item for goods sourced from a Thriftly vendor.
+Team 5 needs to retrieve active product listings (name, category, brand, price, available quantity) from Thriftly in order to reference current pricing and stock when staff create an Invoice or Expense line item for goods sourced from a Thriftly vendor.
 
 Freshness: Near real-time, with updates within minutes, since price and stock affect what staff enter into a financial record.
 Volume: Moderate, accessed whenever staff build a new invoice or expense tied to Thriftly stock.
@@ -67,6 +67,14 @@ Freshness: Real-time, since the confirmation requires an immediate transactional
 Volume: Low, accessed only when a purchase is finalized.
 Authentication: Required, using an authenticated business account token to protect transaction data.
 
+Statement 4: Purchase History
+
+Team 5 needs to retrieve past purchase records from Thriftly (product name, brand, quantity and price, filterable by vendor, product and date range) in order to analyse purchase trends and adjust their internal systems.
+
+Freshness: Low urgency, as this is historical data and does not need to be up to the minute.
+Volume: Low, accessed when Team 5 refreshes their trend reports.
+Authentication: Required, using the same bearer token as purchase confirmation, since purchase history is business data.
+
 Audit Alignment Gap
 
 Mapped Resources: Vendor profile fields and product listing fields map directly to Thriftly's existing vendor and listing resources, and support Team 5's supplier-onboarding and expense-recording workflows.
@@ -76,3 +84,5 @@ Identified Gap: Team 5's original request (verified vendors filtered by category
 Reflection
 
 Our first draft of this section assumed Team 5 needed the same kind of browsing and review features a marketplace consumer would want, without confirming that against their actual app. Reviewing their TEAM_CHARTER.md and database schema showed BillingSys_React is an internal billing tool with no vendor-browsing or review surface — its real need is pulling in vendor and product data to populate its own supplier and expense records, plus confirming purchases. This is a direct example of the Week 2 trap: designing from an assumption instead of the partner's actual screen.
+
+Update after Team 5's contract review (Week 8): Team 5 confirmed three needs our first draft missed. They need a vendor's speciality (met through the vendor description), a product brand (added as an optional field, since many second-hand items have none), and read access to purchase history (Statement 4). They also asked for a vendor street address, which Thriftly does not store because vendors trade from market stalls, so the market name remains the only location data provided.

@@ -31,6 +31,8 @@ paths:
                 name: Mama Njeri's Closet
                 category: Vintage
                 market: Gikomba Market
+                description: Over 200 curated vintage pieces, hand-picked and quality-checked before listing.
+                  Specialises in 80s and 90s women's wear.
                 phone: '+254712345678'
                 email: mamanjeri@example.com
                 verified: true
@@ -61,6 +63,8 @@ paths:
                 name: Mama Njeri's Closet
                 category: Vintage
                 market: Gikomba Market
+                description: Over 200 curated vintage pieces, hand-picked and quality-checked before listing.
+                  Specialises in 80s and 90s women's wear.
                 phone: '+254712345678'
                 email: mamanjeri@example.com
                 verified: true
@@ -91,6 +95,8 @@ paths:
               name: Mama Njeri's Closet
               category: Vintage
               market: Gikomba Market
+              description: Over 200 curated vintage pieces, hand-picked and quality-checked before listing.
+                Specialises in 80s and 90s women's wear.
               phone: '+254712345678'
               email: mamanjeri@example.com
               verified: true
@@ -172,6 +178,7 @@ paths:
                 vendorId: 1
                 name: Denim Jacket, Size M
                 category: Vintage
+                brand: Levi's
                 price: 750
                 currency: KES
                 quantityAvailable: 3
@@ -201,6 +208,7 @@ paths:
                 vendorId: 1
                 name: Denim Jacket, Size M
                 category: Vintage
+                brand: Levi's
                 price: 750
                 currency: KES
                 quantityAvailable: 3
@@ -230,6 +238,7 @@ paths:
             example:
               name: Denim Jacket, Size M
               category: Vintage
+              brand: Levi's
               price: 750
               currency: KES
               quantityAvailable: 3
@@ -342,6 +351,100 @@ paths:
       description: 'Records a confirmed stock purchase and reduces the product''s available stock by the
         purchased quantity. The product must belong to the given vendor. Requires the header `Authorization:
         Bearer thriftly-dev-token-2026` (placeholder token until real auth is built).'
+    get:
+      summary: List past purchases, newest first
+      description: 'Returns purchase history so a consumer can analyse trends. Each record includes the
+        product''s current name and brand (not a snapshot from the time of purchase). All filters are
+        optional and combine with AND. Requires the header `Authorization: Bearer thriftly-dev-token-2026`
+        (placeholder token).'
+      operationId: listPurchases
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: vendorId
+        in: query
+        required: false
+        description: Only purchases from this vendor
+        schema:
+          type: integer
+          example: 1
+      - name: productId
+        in: query
+        required: false
+        description: Only purchases of this product
+        schema:
+          type: integer
+          example: 1
+      - name: from
+        in: query
+        required: false
+        description: Only purchases at or after this moment
+        schema:
+          type: string
+          format: date-time
+          example: '2026-10-01T00:00:00Z'
+      - name: to
+        in: query
+        required: false
+        description: Only purchases at or before this moment
+        schema:
+          type: string
+          format: date-time
+          example: '2026-10-31T23:59:59Z'
+      responses:
+        '200':
+          description: Matching purchases (empty array if none)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PurchaseRecord'
+              example:
+              - id: '2'
+                referenceNumber: THR-PC-8F8F3C94
+                vendorId: 1
+                productId: 1
+                productName: Denim Jacket, Size M
+                brand: Levi's
+                quantity: 2
+                unitPrice: 750
+                totalAmount: 1500
+                currency: KES
+                status: confirmed
+                createdAt: '2026-10-12T06:29:23.679Z'
+              - id: '1'
+                referenceNumber: THR-PC-E46C3697
+                vendorId: 5
+                productId: 9
+                productName: Charcoal Blazer, Size 42
+                brand: null
+                quantity: 1
+                unitPrice: 1800
+                totalAmount: 1800
+                currency: KES
+                status: confirmed
+                createdAt: '2026-10-12T06:30:53.559Z'
+        '400':
+          description: vendorId must be an integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: invalid_request
+                message: vendorId must be an integer
+        '401':
+          description: Bearer token missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: unauthorized
+                message: Bearer token missing or invalid
+        '500':
+          $ref: '#/components/responses/ServerError'
   /purchases/{id}:
     get:
       summary: Look up a purchase confirmation by ID
@@ -382,6 +485,7 @@ components:
       - name
       - category
       - market
+      - description
       - verified
       properties:
         id:
@@ -412,6 +516,12 @@ components:
         verified:
           type: boolean
           example: true
+        description:
+          type: string
+          nullable: true
+          description: Free-text description of the vendor, including what they specialise in.
+          example: Over 200 curated vintage pieces, hand-picked and quality-checked before listing. Specialises
+            in 80s and 90s women's wear.
     VendorUpdateRequest:
       type: object
       required:
@@ -447,6 +557,11 @@ components:
         verified:
           type: boolean
           example: true
+        description:
+          type: string
+          nullable: true
+          example: Over 200 curated vintage pieces, hand-picked and quality-checked before listing. Specialises
+            in 80s and 90s women's wear.
     ProductUpdateRequest:
       type: object
       required:
@@ -478,6 +593,10 @@ components:
         quantityAvailable:
           type: integer
           example: 3
+        brand:
+          type: string
+          nullable: true
+          example: Levi's
     Product:
       type: object
       required:
@@ -485,6 +604,7 @@ components:
       - vendorId
       - name
       - category
+      - brand
       - price
       - currency
       - quantityAvailable
@@ -517,6 +637,11 @@ components:
         quantityAvailable:
           type: integer
           example: 3
+        brand:
+          type: string
+          nullable: true
+          description: Brand of the item, or null when the item is unbranded.
+          example: Levi's
     PurchaseRequest:
       type: object
       required:
@@ -600,6 +725,68 @@ components:
         message:
           type: string
           example: quantity must be a positive integer
+    PurchaseRecord:
+      type: object
+      required:
+      - id
+      - referenceNumber
+      - vendorId
+      - productId
+      - productName
+      - brand
+      - quantity
+      - unitPrice
+      - totalAmount
+      - currency
+      - status
+      - createdAt
+      properties:
+        id:
+          type: string
+          example: '2'
+        referenceNumber:
+          type: string
+          example: THR-PC-8F8F3C94
+        vendorId:
+          type: integer
+          example: 1
+        productId:
+          type: integer
+          example: 1
+        productName:
+          type: string
+          description: The product's current name.
+          example: Denim Jacket, Size M
+        brand:
+          type: string
+          nullable: true
+          description: The product's current brand, or null if unbranded.
+          example: Levi's
+        quantity:
+          type: integer
+          example: 2
+        unitPrice:
+          type: number
+          format: float
+          description: totalAmount divided by quantity, rounded to 2 decimals.
+          example: 750
+        totalAmount:
+          type: number
+          format: float
+          example: 1500
+        currency:
+          type: string
+          example: KES
+        status:
+          type: string
+          enum:
+          - confirmed
+          - failed
+          example: confirmed
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-10-12T06:29:23.679Z'
   responses:
     NotFound:
       description: The requested resource does not exist

@@ -5,13 +5,73 @@ const db = require('../db');
 
 const API_TOKEN = "thriftly-dev-token-2026"; // placeholder shared secret — see CONTRACT_DEVIATIONS.md
 
+function isAuthorized(req) {
+  const match = (req.headers['authorization'] || '').match(/^Bearer\s+(.+)$/);
+  return Boolean(match) && match[1] === API_TOKEN;
+}
+
+// GET /purchases  — purchase history, optionally filtered
+router.get('/', async (req, res) => {
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ error: 'unauthorized', message: 'Bearer token missing or invalid' });
+  }
+
+  const bad = message => res.status(400).json({ error: 'invalid_request', message });
+  const where = [];
+  const params = [];
+
+  for (const [qs, col] of [['vendorId', 'pu.vendor_id'], ['productId', 'pu.product_id']]) {
+    if (req.query[qs] !== undefined) {
+      if (!/^\d+$/.test(req.query[qs])) return bad(`${qs} must be an integer`);
+      where.push(`${col} = ?`);
+      params.push(Number(req.query[qs]));
+    }
+  }
+  for (const [qs, op] of [['from', '>='], ['to', '<=']]) {
+    if (req.query[qs] !== undefined) {
+      const d = new Date(req.query[qs]);
+      if (isNaN(d.getTime())) return bad(`${qs} must be a valid date or date-time`);
+      where.push(`pu.created_at ${op} ?`);
+      params.push(d);
+    }
+  }
+
+  try {
+    const [rows] = await db.query(`
+      SELECT pu.purchase_id, pu.reference_number, pu.vendor_id, pu.product_id,
+             p.name AS product_name, p.brand AS brand, pu.quantity,
+             ROUND(pu.total_amount / pu.quantity, 2) AS unit_price,
+             pu.total_amount, pu.currency, pu.status, pu.created_at
+      FROM purchases pu
+      JOIN products p ON pu.product_id = p.product_id
+      ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+      ORDER BY pu.created_at DESC, pu.purchase_id DESC
+    `, params);
+
+    res.json(rows.map(r => ({
+      id: String(r.purchase_id),
+      referenceNumber: r.reference_number,
+      vendorId: r.vendor_id,
+      productId: r.product_id,
+      productName: r.product_name,
+      brand: r.brand,
+      quantity: r.quantity,
+      unitPrice: parseFloat(r.unit_price),
+      totalAmount: parseFloat(r.total_amount),
+      currency: r.currency,
+      status: r.status,
+      createdAt: new Date(r.created_at).toISOString()
+    })));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'server_error', message: 'Failed to fetch purchases' });
+  }
+});
+
 // POST /purchases
 router.post('/', async (req, res) => {
   // --- Auth check first ---
-  const authHeader = req.headers['authorization'] || '';
-  const match = authHeader.match(/^Bearer\s+(.+)$/);
-
-  if (!match || match[1] !== API_TOKEN) {
+  if (!isAuthorized(req)) {
     return res.status(401).json({ error: 'unauthorized', message: 'Bearer token missing or invalid' });
   }
 
