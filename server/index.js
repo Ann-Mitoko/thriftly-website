@@ -10,7 +10,7 @@ const path = require('path');
 const YAML = require('yamljs');
 const spec = YAML.load(path.join(__dirname, '..', './openapi.yaml'));
 
-const path = require('path');
+
 
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
