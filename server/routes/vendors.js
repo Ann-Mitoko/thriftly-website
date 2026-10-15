@@ -29,7 +29,7 @@ router.get('/:id', async (req, res) => {
       FROM vendors v
       JOIN categories c ON v.category_id = c.category_id
       JOIN markets m ON v.market_id = m.market_id
-      WHERE v.vendor_id = ?
+      WHERE v.vendor_id = ? AND v.status = 'verified'
     `, [req.params.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'not_found', message: 'No vendor found with the given id' });
     const r = rows[0];

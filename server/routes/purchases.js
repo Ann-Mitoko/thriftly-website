@@ -5,6 +5,10 @@ const db = require('../db');
 
 const API_TOKEN = "thriftly-dev-token-2026"; // placeholder shared secret — see CONTRACT_DEVIATIONS.md
 
+class HttpError extends Error {
+  constructor(status, error, message) { super(message); this.status = status; this.error = error; }
+}
+
 function isAuthorized(req) {
   const match = (req.headers['authorization'] || '').match(/^Bearer\s+(.+)$/);
   return Boolean(match) && match[1] === API_TOKEN;
@@ -104,41 +108,53 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'invalid_request', message: 'currency must be a non-empty string' });
   }
 
+  // Everything below runs in ONE transaction on ONE connection. The product row is locked
+  // (FOR UPDATE) so simultaneous purchases queue up instead of all reading the same stock.
+  const conn = await db.getConnection();
   try {
-    // --- Validation: does the vendor exist? ---
-    const [vendorRows] = await db.query('SELECT vendor_id FROM vendors WHERE vendor_id = ?', [vendorId]);
+    await conn.beginTransaction();
+
+    const [vendorRows] = await conn.query('SELECT vendor_id FROM vendors WHERE vendor_id = ?', [vendorId]);
     if (vendorRows.length === 0) {
-      return res.status(404).json({ error: 'not_found', message: 'No vendor found with the given vendorId' });
+      throw new HttpError(404, 'not_found', 'No vendor found with the given vendorId');
     }
 
-    // --- Validation: does the product exist for this vendor? ---
-    const [productRows] = await db.query(
-      'SELECT quantity_available FROM products WHERE product_id = ? AND vendor_id = ?',
+    const [productRows] = await conn.query(
+      'SELECT price, quantity_available FROM products WHERE product_id = ? AND vendor_id = ? FOR UPDATE',
       [productId, vendorId]
     );
     if (productRows.length === 0) {
-      return res.status(404).json({ error: 'not_found', message: 'No product found with the given productId for this vendor' });
+      throw new HttpError(404, 'not_found', 'No product found with the given productId for this vendor');
     }
 
-    const availableStock = productRows[0].quantity_available;
-    if (quantity > availableStock) {
-      return res.status(400).json({ error: 'invalid_request', message: 'quantity exceeds available stock' });
+    // --- The caller may not invent a price: total must equal price x quantity (compared in cents) ---
+    const expectedCents = Math.round(parseFloat(productRows[0].price) * 100) * quantity;
+    if (Math.round(totalAmount * 100) !== expectedCents) {
+      throw new HttpError(400, 'invalid_request',
+        `totalAmount must equal the product price x quantity (expected ${(expectedCents / 100).toFixed(2)})`);
     }
 
-    // --- All checks passed: perform the real write ---
+    if (quantity > productRows[0].quantity_available) {
+      throw new HttpError(400, 'invalid_request', 'quantity exceeds available stock');
+    }
+
+    // --- Real writes: stock decrement is guarded again, so it can never go below zero ---
+    const [stockResult] = await conn.query(
+      'UPDATE products SET quantity_available = quantity_available - ? WHERE product_id = ? AND quantity_available >= ?',
+      [quantity, productId, quantity]
+    );
+    if (stockResult.affectedRows !== 1) {
+      throw new HttpError(400, 'invalid_request', 'quantity exceeds available stock');
+    }
+
     const referenceNumber = 'THR-PC-' + crypto.randomBytes(4).toString('hex').toUpperCase();
-
-    const [insertResult] = await db.query(
+    const [insertResult] = await conn.query(
       `INSERT INTO purchases (reference_number, vendor_id, product_id, quantity, total_amount, currency, status)
        VALUES (?, ?, ?, ?, ?, ?, 'confirmed')`,
       [referenceNumber, vendorId, productId, quantity, totalAmount, currency]
     );
 
-    // Decrement stock — a real state change, not just a logged row
-    await db.query(
-      'UPDATE products SET quantity_available = quantity_available - ? WHERE product_id = ?',
-      [quantity, productId]
-    );
+    await conn.commit();
 
     // --- Return the confirmation, shaped exactly to the contract's schema ---
     res.status(201).json({
@@ -154,8 +170,14 @@ router.post('/', async (req, res) => {
     });
 
   } catch (err) {
+    await conn.rollback();           // nothing is half-written: purchase row and stock change succeed or fail together
+    if (err instanceof HttpError) {
+      return res.status(err.status).json({ error: err.error, message: err.message });
+    }
     console.error(err);
     res.status(500).json({ error: 'server_error', message: 'Something went wrong. Please try again.' });
+  } finally {
+    conn.release();
   }
 });
 

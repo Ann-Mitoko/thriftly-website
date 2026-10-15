@@ -87,7 +87,7 @@ Returns an array of all verified vendors, sorted by name. First item shown:
 
 `category` is one of `Vintage`, `Streetwear`, `Kids`, `Accessories`, `Bulk`.
 
-`description` says what the vendor specialises in. There is **no street address**: vendors trade from market stalls, so `market` is the location Thriftly has.
+Only verified vendors are returned; the id of a vendor still awaiting approval gives `404`. `description` says what the vendor specialises in. There is **no street address**: vendors trade from market stalls, so `market` is the location Thriftly has.
 
 ### Get one vendor
 
@@ -158,9 +158,11 @@ Your `referenceNumber`, `id` and `createdAt` will differ. Request body fields (a
 | `vendorId` | integer | Must be an existing vendor |
 | `productId` | integer | Must be an existing product **belonging to that vendor** |
 | `quantity` | integer | At least 1, and no more than the product's `quantityAvailable` |
-| `totalAmount` | number | Greater than 0 |
+| `totalAmount` | number | Must equal the product's price × `quantity` (1800 for one Charcoal Blazer) |
 | `currency` | string | Non-empty, e.g. `"KES"` |
 
+> **A purchase is all-or-nothing.** The purchase record and the stock change succeed or fail together, and stock never goes below zero, even when several purchases arrive at once.
+>
 > **A purchase changes data.** Each successful call reduces that product's `quantityAvailable` by `quantity`. The Charcoal Blazer starts with 12, so the example above works 12 times before it's out of stock (then you'll get a `400`). To reset the data, see [Reset the database](#reset-the-database).
 
 ### List purchase history
@@ -229,7 +231,7 @@ Every error from the working endpoints has the same shape:
 
 | Status | `error` | When it happens | Example `message` |
 |---|---|---|---|
-| 400 | `invalid_request` | Missing field, wrong type, or quantity above stock (`POST /purchases`); bad filter value (`GET /purchases`) | `totalAmount is required` |
+| 400 | `invalid_request` | Missing field, wrong type, total not equal to price × quantity, or quantity above stock (`POST /purchases`); bad filter value (`GET /purchases`) | `totalAmount is required` |
 | 401 | `unauthorized` | Missing or wrong token (any `/purchases` request) | `Bearer token missing or invalid` |
 | 404 | `not_found` | ID doesn't exist | `No vendor found with the given id` |
 | 405 | `method_not_allowed` | Wrong HTTP method on `/purchases` | `Only POST is supported on this endpoint` |
@@ -249,6 +251,12 @@ HTTP/1.1 404 Not Found
 # Same purchase request, but with "totalAmount" left out
 HTTP/1.1 400 Bad Request
 {"error":"invalid_request","message":"totalAmount is required"}
+```
+
+```bash
+# totalAmount that is not price x quantity
+HTTP/1.1 400 Bad Request
+{"error":"invalid_request","message":"totalAmount must equal the product price x quantity (expected 1800.00)"}
 ```
 
 ```bash

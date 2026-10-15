@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f3f5ef">
+  <title>Thriftly | Project Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f3f5ef;
+      --ink: #17201d;
+      --muted: #65716c;
+      --line: #d4dcd5;
+      --blue: #294df4;
+      --red: #f1533f;
+      --lime: #d5f365;
+      --teal: #55d4c5;
+      --white: #fff;
+      --mono: "DM Mono", Consolas, monospace;
+      --sans: "DM Sans", Arial, sans-serif;
+      --display: "Fraunces", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body {
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#cbd3cd 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+    button, a { font: inherit; }
+    a { color: inherit; }
+    .deck { height: 100%; position: relative; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow: auto;
+      padding: clamp(28px, 5vw, 76px) clamp(24px, 7.2vw, 112px) 96px;
+      animation: arrive 420ms cubic-bezier(.2,.8,.2,1) both;
+    }
+    .slide.active { display: block; }
+    @keyframes arrive {
+      from { opacity: .15; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-inner { width: min(1200px, 100%); min-height: 100%; margin: 0 auto; }
+    .eyebrow, .label, .mono { font-family: var(--mono); }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      margin-bottom: 24px;
+      color: var(--blue);
+      font-size: 12px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--red); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { font-family: var(--display); letter-spacing: 0; }
+    h1 { max-width: 850px; margin-bottom: 24px; font-size: clamp(56px, 9vw, 128px); line-height: .92; font-weight: 600; }
+    h2 { max-width: 920px; margin-bottom: 28px; font-size: clamp(42px, 6vw, 76px); line-height: .98; font-weight: 600; }
+    h3 { font-size: clamp(24px, 3vw, 36px); line-height: 1.08; }
+    p { max-width: 720px; color: var(--muted); font-size: clamp(16px, 1.5vw, 20px); line-height: 1.55; }
+    .accent { color: var(--blue); }
+    .accent-red { color: var(--red); }
+    .small { font-size: 14px; line-height: 1.5; }
+    .mono { font-size: 12px; }
+    .cover { min-height: calc(100vh - 150px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(270px, .8fr); align-items: center; gap: clamp(30px, 6vw, 90px); }
+    .cover h1 em { color: var(--blue); font-weight: 600; }
+    .cover-copy { max-width: 580px; font-size: clamp(18px, 2vw, 24px); }
+    .cover-art { height: min(62vh, 560px); min-height: 330px; position: relative; overflow: hidden; background: var(--blue); }
+    .cover-art img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: luminosity; opacity: .75; filter: contrast(1.1); }
+    .cover-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(145deg, rgb(41 77 244 / .16), rgb(19 24 22 / .42)); }
+    .art-tag { position: absolute; z-index: 1; right: 18px; bottom: 18px; padding: 12px 14px; background: var(--lime); font: 12px var(--mono); text-transform: uppercase; }
+    .cover-mark { position: absolute; z-index: 1; left: 20px; top: 18px; color: var(--white); font: 13px var(--mono); }
+    .cover-meta { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 30px; color: var(--muted); font: 12px var(--mono); text-transform: uppercase; }
+    .cover-meta span { display: inline-flex; align-items: center; gap: 8px; }
+    .cover-meta span::before { content: ""; width: 7px; height: 7px; background: var(--red); border-radius: 50%; }
+    .split { display: grid; grid-template-columns: minmax(0, .85fr) minmax(300px, 1.15fr); align-items: start; gap: clamp(32px, 7vw, 100px); }
+    .statement { padding-top: 8px; }
+    .statement p { max-width: 500px; }
+    .rule-list { border-top: 1px solid var(--line); }
+    .rule-row { display: grid; grid-template-columns: 44px 1fr; gap: 18px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .rule-row .num { color: var(--red); font: 13px var(--mono); }
+    .rule-row strong { display: block; margin-bottom: 4px; font-size: 17px; }
+    .rule-row p { margin: 0; font-size: 14px; }
+    .market-strip { position: relative; min-height: 220px; margin-top: 36px; overflow: hidden; background: var(--lime); }
+    .market-strip img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: .8; }
+    .market-strip span { position: absolute; right: 16px; bottom: 14px; z-index: 1; font: 11px var(--mono); text-transform: uppercase; }
+    .feature-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 36px; margin-top: 38px; border-top: 1px solid var(--line); }
+    .feature { display: grid; grid-template-columns: 48px 1fr; gap: 14px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .feature-icon { display: grid; place-items: center; width: 40px; height: 40px; background: var(--teal); font: 16px var(--mono); }
+    .feature:nth-child(2n) .feature-icon { background: var(--lime); }
+    .feature strong { display: block; margin: 2px 0 5px; font-size: 17px; }
+    .feature p { margin: 0; font-size: 14px; }
+    .arch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 34px; border: 1px solid var(--line); background: var(--paper); }
+    .arch-col { min-height: 260px; padding: 24px; border-right: 1px solid var(--line); }
+    .arch-col:last-child { border-right: 0; }
+    .arch-col:nth-child(2) { background: #e6ebff; }
+    .arch-col:nth-child(3) { background: #e3f5ed; }
+    .arch-col .label { display: block; margin-bottom: 26px; color: var(--red); font-size: 11px; text-transform: uppercase; }
+    .arch-col h3 { margin-bottom: 14px; font-size: 27px; }
+    .arch-col p { font-size: 14px; }
+    .arch-flow { display: flex; align-items: center; gap: 9px; margin: 20px 0; color: var(--blue); font: 12px var(--mono); }
+    .arch-flow b { color: var(--muted); font-weight: 400; }
+    .callout { margin-top: 20px; padding: 14px 16px; border-left: 3px solid var(--red); background: #fff3ed; font-size: 14px; line-height: 1.45; }
+    .schema-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 50px; align-items: start; margin-top: 30px; }
+    .schema-list { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); }
+    .schema-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .schema-item strong { font-size: 16px; }
+    .schema-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .schema-visual { position: relative; padding: 24px; background: var(--ink); color: var(--white); }
+    .schema-visual .table { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .schema-visual .entity { padding: 13px 14px; border: 1px solid #49524e; }
+    .schema-visual .entity b { display: block; margin-bottom: 5px; color: var(--lime); font: 14px var(--mono); }
+    .schema-visual .entity span { color: #c4cfca; font-size: 12px; }
+    .schema-footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 18px; padding-top: 15px; border-top: 1px solid #49524e; color: #c4cfca; font: 11px var(--mono); }
+    .api-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 34px; }
+    .api-group { border-top: 4px solid var(--blue); }
+    .api-group.write { border-color: var(--red); }
+    .api-group h3 { margin: 18px 0 8px; font-size: 29px; }
+    .api-group > p { font-size: 14px; }
+    .endpoint { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; min-height: 56px; border-top: 1px solid var(--line); font: 13px var(--mono); }
+    .method { display: inline-block; width: fit-content; min-width: 54px; padding: 6px 7px; color: var(--blue); background: #e6ebff; text-align: center; font-weight: 500; }
+    .method.post { color: #b93425; background: #ffe4dc; }
+    .method.planned { color: #735610; background: #f6ebba; }
+    .contract-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; margin-top: 32px; background: var(--ink); color: var(--white); }
+    .contract-bar div { padding: 17px 20px; border-right: 1px solid #49524e; }
+    .contract-bar div:last-child { border: 0; }
+    .contract-bar b { display: block; margin-bottom: 5px; color: var(--lime); font: 12px var(--mono); }
+    .contract-bar span { font-size: 13px; }
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 46px; border-top: 1px solid var(--line); }
+    .timeline-item { position: relative; padding: 23px 22px 0 0; }
+    .timeline-item::before { content: ""; position: absolute; top: -5px; left: 0; width: 9px; height: 9px; background: var(--red); border: 2px solid var(--paper); outline: 1px solid var(--red); border-radius: 50%; }
+    .timeline-item .label { color: var(--blue); font-size: 11px; text-transform: uppercase; }
+    .timeline-item h3 { margin: 10px 0 8px; font: 600 18px var(--sans); }
+    .timeline-item p { margin: 0; font-size: 13px; }
+    .demo-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 35px; margin-top: 34px; align-items: start; }
+    .editor-window { overflow: hidden; border: 1px solid #bbc5be; background: #fff; box-shadow: 12px 12px 0 var(--lime); }
+    .editor-top { display: flex; align-items: center; gap: 7px; height: 39px; padding: 0 13px; background: #e6eae6; border-bottom: 1px solid #d3d9d4; }
+    .editor-top i { width: 7px; height: 7px; background: #9da8a2; border-radius: 50%; }
+    .editor-top span { margin-left: 8px; color: #65716c; font: 10px var(--mono); }
+    .editor-content { display: grid; grid-template-columns: 1fr 1fr; min-height: 330px; }
+    .editor-code { padding: 18px; color: #dce5df; background: #202a26; font: 12px/1.8 var(--mono); white-space: pre-wrap; }
+    .editor-code .key { color: #84ddca; }
+    .editor-code .value { color: #d7ef7d; }
+    .editor-preview { padding: 18px; }
+    .preview-title { display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-weight: 700; }
+    .preview-title small { color: var(--muted); font: 10px var(--mono); }
+    .preview-path { display: flex; align-items: center; gap: 9px; margin-top: 12px; padding: 10px; border: 1px solid var(--line); font: 11px var(--mono); }
+    .preview-path b { color: var(--blue); }
+    .preview-path.post b { color: var(--red); }
+    .import-steps { border-top: 1px solid var(--line); }
+    .step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    .step-num { display: grid; place-items: center; width: 28px; height: 28px; background: var(--blue); color: white; font: 12px var(--mono); }
+    .step strong { display: block; margin-bottom: 4px; font-size: 15px; }
+    .step p { margin: 0; font-size: 13px; }
+    .button-link { display: inline-flex; align-items: center; gap: 12px; margin-top: 20px; padding: 14px 17px; color: var(--white); background: var(--blue); text-decoration: none; font-weight: 700; }
+    .button-link:hover { background: #1737d2; }
+    .button-link span { font: 16px var(--mono); }
+    .walkthrough { display: grid; grid-template-columns: minmax(0, 1fr) minmax(290px, .8fr); gap: 40px; margin-top: 34px; }
+    .code-sample { margin: 0; padding: 22px; overflow: auto; background: var(--ink); color: #e5eee8; font: 12px/1.75 var(--mono); }
+    .code-sample .green { color: var(--lime); }
+    .code-sample .teal { color: var(--teal); }
+    .result-box { padding: 22px; background: #e5edff; }
+    .result-box .label { display: block; margin-bottom: 13px; color: var(--blue); font-size: 11px; text-transform: uppercase; }
+    .result-box h3 { margin-bottom: 12px; font-size: 29px; }
+    .result-box p { font-size: 14px; }
+    .result-box .result { display: inline-block; padding: 7px 10px; background: var(--white); color: var(--blue); font: 12px var(--mono); }
+    .warning-strip { margin-top: 26px; padding: 15px 18px; background: #fff1ea; border-left: 3px solid var(--red); color: #743a2b; font-size: 13px; line-height: 1.5; }
+    .gap-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 40px; margin-top: 36px; border-top: 1px solid var(--line); }
+    .gap { padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .gap .label { display: block; margin-bottom: 7px; color: var(--red); font-size: 11px; text-transform: uppercase; }
+    .gap strong { display: block; margin-bottom: 5px; font-size: 16px; }
+    .gap p { margin: 0; font-size: 13px; }
+    .close-slide { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(250px, .7fr); gap: 40px; align-items: center; min-height: 70vh; }
+    .close-slide h2 { font-size: clamp(50px, 8vw, 102px); }
+    .close-stamp { display: grid; place-items: center; aspect-ratio: 1; max-width: 340px; justify-self: end; border-radius: 50%; background: var(--red); color: white; transform: rotate(-8deg); }
+    .close-stamp span { font: 600 clamp(24px, 4vw, 48px)/1 var(--display); text-align: center; }
+    .controls { position: fixed; z-index: 10; right: clamp(16px, 3vw, 40px); bottom: 20px; left: clamp(16px, 3vw, 40px); display: flex; align-items: center; justify-content: space-between; gap: 14px; pointer-events: none; }
+    .controls > * { pointer-events: auto; }
+    .deck-name { color: var(--muted); font: 11px var(--mono); text-transform: uppercase; }
+    .control-right { display: flex; align-items: center; gap: 10px; }
+    .counter { min-width: 58px; color: var(--ink); font: 12px var(--mono); text-align: center; }
+    .nav-btn { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; font: 20px var(--mono); }
+    .nav-btn:hover:not(:disabled) { color: white; background: var(--ink); }
+    .nav-btn:disabled { opacity: .35; cursor: default; }
+    .progress { position: fixed; z-index: 11; right: 0; bottom: 0; left: 0; height: 3px; background: #d4dcd5; }
+    .progress span { display: block; width: 0; height: 100%; background: var(--red); transition: width 220ms ease; }
+    @media (max-width: 800px) {
+      body { overflow: hidden; }
+      .slide { padding: 30px 24px 90px; }
+      .cover, .split, .schema-layout, .demo-layout, .walkthrough, .close-slide { grid-template-columns: 1fr; }
+      .cover { align-content: start; gap: 28px; }
+      .cover-art { height: 32vh; min-height: 220px; }
+      .feature-grid, .api-columns, .gap-list { grid-template-columns: 1fr; }
+      .arch { grid-template-columns: 1fr; }
+      .arch-col { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .arch-col:last-child { border-bottom: 0; }
+      .timeline { grid-template-columns: repeat(2, 1fr); row-gap: 22px; }
+      .contract-bar { grid-template-columns: 1fr; }
+      .contract-bar div { border-right: 0; border-bottom: 1px solid #49524e; }
+      .close-stamp { max-width: 220px; justify-self: start; }
+      .deck-name { display: none; }
+      .editor-content { grid-template-columns: 1fr; }
+      .editor-code { min-height: 220px; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 56px; }
+      h2 { font-size: 43px; }
+      .timeline { grid-template-columns: 1fr; }
+      .schema-list { grid-template-columns: 1fr 1fr; }
+      .controls { bottom: 14px; }
+      .nav-btn { width: 40px; height: 40px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+    @media print {
+      body { height: auto; overflow: visible; background: white; }
+      .slide { position: relative; display: block !important; width: 100%; min-height: 100vh; page-break-after: always; animation: none; }
+      .controls, .progress { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" aria-label="Thriftly project presentation">
+    <section class="slide active" aria-label="Title">
+      <div class="slide-inner cover">
+        <div>
+          <div class="eyebrow">Project walkthrough / 2026</div>
+          <h1>Thriftly,<br><em>connected.</em></h1>
+          <p class="cover-copy">A Nairobi second-hand marketplace concept, its data foundation, and an API contract designed for real partner workflows.</p>
+          <div class="cover-meta"><span>Product</span><span>Platform</span><span>OpenAPI</span></div>
+        </div>
+        <div class="cover-art">
+          <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=85" alt="Clothing racks inside a retail shop">
+          <span class="cover-mark">NAIROBI / KE</span>
+          <span class="art-tag">Find your next favorite</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="The opportunity">
+      <div class="slide-inner split">
+        <div class="statement">
+          <div class="eyebrow">01 / The opportunity</div>
+          <h2>Good finds.<br><span class="accent">Less guesswork.</span></h2>
+          <p>Thriftly brings Nairobi's second-hand stalls into one searchable experience, helping shoppers and resellers find verified vendors without relying only on brokers, referrals, or wandering market aisles.</p>
+          <div class="market-strip">
+            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1200&q=80" alt="A collection of second-hand fashion pieces">
+            <span>Curated style / local sellers</span>
+          </div>
+        </div>
+        <div class="rule-list">
+          <div class="rule-row"><span class="num">01</span><div><strong>Make stalls discoverable</strong><p>Search and browse verified vendors by category and market.</p></div></div>
+          <div class="rule-row"><span class="num">02</span><div><strong>Serve two buying modes</strong><p>Buyer browsing and reseller bulk sourcing have different entry points.</p></div></div>
+          <div class="rule-row"><span class="num">03</span><div><strong>Build trust into discovery</strong><p>Profiles surface vendor identity, location, contact details, and speciality.</p></div></div>
+          <div class="rule-row"><span class="num">04</span><div><strong>Connect systems, not just screens</strong><p>The API lets a partner billing system reuse vendor and product data, then record purchases.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Marketplace experience">
+      <div class="slide-inner">
+        <div class="eyebrow">02 / Marketplace experience</div>
+        <h2>A browse-to-contact journey, shaped for <span class="accent">buyers and resellers.</span></h2>
+        <div class="feature-grid">
+          <div class="feature"><span class="feature-icon">01</span><div><strong>Browse and search</strong><p>Search vendor names, areas, categories, and descriptions; narrow the list with category filters.</p></div></div>
+          <div class="feature"><span class="feature-icon">02</span><div><strong>Switch intent</strong><p>Buyer and reseller modes adjust the page language and default browsing filter.</p></div></div>
+          <div class="feature"><span class="feature-icon">03</span><div><strong>Inspect a stall</strong><p>Vendor detail modal presents market, speciality, phone, Instagram, hours, and price range.</p></div></div>
+          <div class="feature"><span class="feature-icon">04</span><div><strong>Contact directly</strong><p>A WhatsApp action connects shoppers with a vendor from the profile.</p></div></div>
+          <div class="feature"><span class="feature-icon">05</span><div><strong>Onboard a seller</strong><p>The stall form validates required fields and submits the listing for manual verification.</p></div></div>
+          <div class="feature"><span class="feature-icon">06</span><div><strong>Show trust signals</strong><p>Verified badges, condition grades, review summaries, and a proposed escrow flow appear in the marketplace concept.</p></div></div>
+        </div>
+        <div class="callout"><strong>Scope note:</strong> the marketplace page is a product prototype. Its payment/escrow story is presented as a concept; the working partner API currently records stock purchases and does not process buyer payments.</div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Application architecture">
+      <div class="slide-inner">
+        <div class="eyebrow">03 / Application architecture</div>
+        <h2>Three code paths, <span class="accent">one marketplace domain.</span></h2>
+        <p>The repository holds the original marketplace experience plus a separately routed integration API and a small React client experiment.</p>
+        <div class="arch">
+          <div class="arch-col">
+            <span class="label">Marketplace site</span>
+            <h3>HTML / CSS / JS</h3>
+            <p>Vendor discovery, filters, details, and seller submission interface.</p>
+            <div class="arch-flow">Browser <b>→</b> PHP endpoints <b>→</b> MySQL</div>
+            <p class="small">`get_vendors.php` reads verified vendors; `submit_vendor.php` stores new applications as pending.</p>
+          </div>
+          <div class="arch-col">
+            <span class="label">Partner API</span>
+            <h3>Express + MySQL</h3>
+            <p>JSON API for verified vendors, product listings, and completed purchase records.</p>
+            <div class="arch-flow">Consumer <b>→</b> Express routes <b>→</b> MySQL</div>
+            <p class="small">`openapi.yaml` documents this server at `localhost:5000`; CORS and JSON parsing are enabled.</p>
+          </div>
+          <div class="arch-col">
+            <span class="label">Client experiment</span>
+            <h3>React vendor table</h3>
+            <p>A compact React client demonstrates fetching and tabular rendering of vendor data.</p>
+            <div class="arch-flow">React <b>→</b> fetch <b>→</b> vendors</div>
+            <p class="small">Its current URL is `/api/vendors`, which does not match the Express API's `/vendors` route yet.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Data foundation">
+      <div class="slide-inner">
+        <div class="eyebrow">04 / Data foundation</div>
+        <h2>A relational base for stalls, stock, and <span class="accent">transactions.</span></h2>
+        <div class="schema-layout">
+          <div>
+            <p>`thriftly_schema.sql` creates the MySQL database, its relationships, and sample marketplace data.</p>
+            <div class="schema-list">
+              <div class="schema-item"><strong>vendors</strong><span>market, category, status, contact</span></div>
+              <div class="schema-item"><strong>products</strong><span>vendor, price, stock, nullable brand</span></div>
+              <div class="schema-item"><strong>purchases</strong><span>reference, quantity, total, timestamp</span></div>
+              <div class="schema-item"><strong>markets</strong><span>stall-market locations</span></div>
+              <div class="schema-item"><strong>categories</strong><span>Vintage through Bulk</span></div>
+              <div class="schema-item"><strong>reviews / users</strong><span>marketplace domain tables</span></div>
+            </div>
+          </div>
+          <div class="schema-visual" aria-label="Database sample data summary">
+            <div class="label" style="color: var(--teal); margin-bottom: 17px;">Seeded development dataset</div>
+            <div class="table">
+              <div class="entity"><b>06 vendors</b><span>Sample verified stalls</span></div>
+              <div class="entity"><b>10 products</b><span>Sample product listings</span></div>
+              <div class="entity"><b>05 categories</b><span>Vintage, Streetwear, Kids, Accessories, Bulk</span></div>
+              <div class="entity"><b>KES</b><span>Single-currency API responses</span></div>
+            </div>
+            <div class="schema-footer"><span>MYSQL / RELATIONAL</span><span>FOREIGN KEYS</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Partner API scope">
+      <div class="slide-inner">
+        <div class="eyebrow">05 / Partner API scope</div>
+        <h2>Designed around what a billing system <span class="accent">actually needs.</span></h2>
+        <p>Contract review shifted the integration away from speculative marketplace browsing and toward BillingSys supplier onboarding, expense entry, and purchase reporting.</p>
+        <div class="api-columns">
+          <div class="api-group">
+            <h3>Public lookups</h3>
+            <p>Read-only data for vendor and product setup.</p>
+            <div class="endpoint"><span class="method">GET</span><span>/vendors</span></div>
+            <div class="endpoint"><span class="method">GET</span><span>/vendors/{id}</span></div>
+            <div class="endpoint"><span class="method">GET</span><span>/products?category=&amp;vendorId=</span></div>
+            <div class="endpoint"><span class="method">GET</span><span>/products/{id}</span></div>
+          </div>
+          <div class="api-group write">
+            <h3>Protected purchases</h3>
+            <p>Bearer-token access for transaction records.</p>
+            <div class="endpoint"><span class="method post">POST</span><span>/purchases</span></div>
+            <div class="endpoint"><span class="method">GET</span><span>/purchases?vendorId=&amp;productId=&amp;from=&amp;to=</span></div>
+            <div class="endpoint"><span class="method planned">PLANNED</span><span>5 other contract operations</span></div>
+          </div>
+        </div>
+        <div class="contract-bar">
+          <div><b>6 OPERATIONS</b><span>Implemented in Express</span></div>
+          <div><b>5 OPERATIONS</b><span>Documented, not yet implemented</span></div>
+          <div><b>TEAM 5</b><span>BillingSys partner use case</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Contract evolution">
+      <div class="slide-inner">
+        <div class="eyebrow">06 / Contract evolution</div>
+        <h2>The spec got better when the consumer's real workflow became <span class="accent">visible.</span></h2>
+        <p>Partner questions and implementation checks shaped the contract rather than letting assumptions quietly harden into endpoints.</p>
+        <div class="timeline">
+          <div class="timeline-item"><span class="label">Initial scope</span><h3>Marketplace ideas</h3><p>Early requirements considered market maps, reviews, and other consumer browsing needs.</p></div>
+          <div class="timeline-item"><span class="label">Partner review</span><h3>Billing workflows</h3><p>Team 5's actual screens called for supplier details, current listings, purchase confirmation, and history.</p></div>
+          <div class="timeline-item"><span class="label">Week 8 updates</span><h3>Useful fields</h3><p>Added vendor description, nullable product brand, integer IDs, corrected categories, and GET purchase history.</p></div>
+          <div class="timeline-item"><span class="label">Contract discipline</span><h3>Gaps made explicit</h3><p>Unbuilt operations are labelled planned; unrequested vendor filtering was removed instead of pretending it worked.</p></div>
+        </div>
+        <div class="callout"><strong>Integration context:</strong> `API_NEEDS.md` also records an earlier Pharmalink / nearby health-services concept and its unresolved contract questions. The implemented API documented here serves the confirmed Team 5 BillingSys integration.</div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Swagger Editor walkthrough">
+      <div class="slide-inner">
+        <div class="eyebrow">07 / Live documentation demo</div>
+        <h2>Show the contract in <span class="accent">Swagger Editor.</span></h2>
+        <div class="demo-layout">
+          <div>
+            <div class="editor-window" aria-label="Illustration of an OpenAPI editor and preview">
+              <div class="editor-top"><i></i><i></i><i></i><span>editor.swagger.io / openapi.yaml</span></div>
+              <div class="editor-content">
+                <div class="editor-code"><span class="key">openapi</span>: <span class="value">3.0.0</span>
+<span class="key">info</span>:
+  <span class="key">title</span>: <span class="value">Thriftly API</span>
+  <span class="key">version</span>: <span class="value">1.0.0</span>
+<span class="key">servers</span>:
+  - <span class="key">url</span>: <span class="value">http://localhost:5000</span>
+<span class="key">paths</span>:
+  <span class="key">/vendors</span>:
+    <span class="key">get</span>:
+      <span class="key">operationId</span>: <span class="value">listVendors</span>
+  <span class="key">/purchases</span>:
+    <span class="key">post</span>:
+      <span class="key">operationId</span>: <span class="value">createPurchase</span></div>
+                <div class="editor-preview">
+                  <div class="preview-title">Thriftly API <small>1.0.0</small></div>
+                  <div class="preview-path"><b>GET</b><span>/vendors</span></div>
+                  <div class="preview-path"><b>GET</b><span>/products</span></div>
+                  <div class="preview-path post"><b>POST</b><span>/purchases</span></div>
+                  <div class="preview-path"><b>GET</b><span>/purchases</span></div>
+                </div>
+              </div>
+            </div>
+            <a class="button-link" href="https://editor.swagger.io/" target="_blank" rel="noreferrer">Open Swagger Editor <span aria-hidden="true">↗</span></a>
+          </div>
+          <div>
+            <div class="import-steps">
+              <div class="step"><span class="step-num">1</span><div><strong>Open the editor</strong><p>Launch editor.swagger.io in a new tab.</p></div></div>
+              <div class="step"><span class="step-num">2</span><div><strong>Import this project's spec</strong><p>Choose <span class="mono">File → Import File</span>, then select <span class="mono">openapi.yaml</span>.</p></div></div>
+              <div class="step"><span class="step-num">3</span><div><strong>Explore the generated reference</strong><p>Expand paths to inspect parameters, request bodies, response codes, examples, and bearer security.</p></div></div>
+              <div class="step"><span class="step-num">4</span><div><strong>Compare implementation status</strong><p>Look for the <span class="mono">NOT YET IMPLEMENTED</span> descriptions on planned operations.</p></div></div>
+            </div>
+            <p class="small" style="margin: 18px 0 0;">The OpenAPI file is the source contract; the visual editor preview is generated from that file. The mock editor view on this slide is a guide to what to inspect.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Purchase walkthrough">
+      <div class="slide-inner">
+        <div class="eyebrow">08 / Transaction walkthrough</div>
+        <h2>One confirmed purchase updates the <span class="accent">record and stock.</span></h2>
+        <div class="walkthrough">
+          <pre class="code-sample"><span class="green">POST</span> /purchases
+Authorization: Bearer &lt;dev-token&gt;
+Content-Type: application/json
+
+{
+  <span class="teal">"vendorId"</span>: 5,
+  <span class="teal">"productId"</span>: 9,
+  <span class="teal">"quantity"</span>: 1,
+  <span class="teal">"totalAmount"</span>: 1800,
+  <span class="teal">"currency"</span>: "KES"
+}
+
+<span class="green">201 Created</span>
+{
+  "referenceNumber": "THR-PC-...",
+  "status": "confirmed",
+  "quantity": 1,
+  "totalAmount": 1800
+}</pre>
+          <div class="result-box">
+            <span class="label">Server-side checks</span>
+            <h3>Validate, record, decrement.</h3>
+            <p>Requires existing vendor and matching product, positive quantity and amount, and enough available stock. Successful confirmation generates a reference and reduces product quantity.</p>
+            <span class="result">401 auth / 400 validation / 404 missing record</span>
+            <p class="small" style="margin-top: 16px;">Purchase history is newest-first and filterable by vendor, product, and date range. Product name and brand reflect their current values, not a purchase-time snapshot.</p>
+          </div>
+        </div>
+        <div class="warning-strip"><strong>Demo security:</strong> the current bearer check uses one shared placeholder token, not real user authentication or JWT validation. Keep it to local/demo use; it is not production security.</div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Current limitations and next steps">
+      <div class="slide-inner">
+        <div class="eyebrow">09 / Honest status</div>
+        <h2>Working foundation. <span class="accent-red">Clear next steps.</span></h2>
+        <div class="gap-list">
+          <div class="gap"><span class="label">Security</span><strong>Replace the shared dev token</strong><p>Introduce real authentication, scoped credentials, secret management, and authorization policies.</p></div>
+          <div class="gap"><span class="label">Contract parity</span><strong>Implement the five planned operations</strong><p>Vendor/product update and delete, plus purchase lookup by ID, are documented but return 404 today.</p></div>
+          <div class="gap"><span class="label">React wiring</span><strong>Align the client route</strong><p>The React table fetches `/api/vendors`; the Express service exposes `/vendors` and needs matching response expectations.</p></div>
+          <div class="gap"><span class="label">History quality</span><strong>Add durable purchase snapshots</strong><p>History currently joins live product name/brand and has no pagination, so old purchase details can change.</p></div>
+          <div class="gap"><span class="label">Integration testing</span><strong>Make contract checks repeatable</strong><p>Add automated API tests for success, validation, authorization, stock changes, and database failures.</p></div>
+          <div class="gap"><span class="label">Documentation hygiene</span><strong>Keep notes in sync with the active server</strong><p>Some deviation notes describe the older PHP API path approach; the current Express API uses REST paths.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Closing">
+      <div class="slide-inner close-slide">
+        <div>
+          <div class="eyebrow">10 / Takeaway</div>
+          <h2>From local stalls to a <span class="accent">shared contract.</span></h2>
+          <p>Thriftly now has a searchable marketplace concept, a MySQL data model, an Express partner API, and an OpenAPI contract that can be explored in Swagger Editor.</p>
+          <p class="small"><strong>Next move:</strong> import `openapi.yaml`, walk the six implemented operations, then discuss the five explicit gaps.</p>
+          <a class="button-link" href="https://editor.swagger.io/" target="_blank" rel="noreferrer">Launch the Swagger demo <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="close-stamp"><span>Find it.<br>Trust it.<br>Connect it.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Slide controls">
+    <span class="deck-name">Thriftly / Project presentation</span>
+    <div class="control-right">
+      <span class="counter" aria-live="polite">01 / 11</span>
+      <button class="nav-btn prev" type="button" aria-label="Previous slide" title="Previous slide">←</button>
+      <button class="nav-btn next" type="button" aria-label="Next slide" title="Next slide">→</button>
+    </div>
+  </nav>
+  <div class="progress" aria-hidden="true"><span></span></div>
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const counter = document.querySelector('.counter');
+      const progress = document.querySelector('.progress span');
+      const previous = document.querySelector('.prev');
+      const next = document.querySelector('.next');
+      let current = 0;
+      let touchStart = 0;
+
+      function showSlide(index) {
+        current = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle('active', slideIndex === current);
+          slide.setAttribute('aria-hidden', slideIndex === current ? 'false' : 'true');
+          if (slideIndex === current) slide.scrollTop = 0;
+        });
+        counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+        progress.style.width = ((current + 1) / slides.length * 100) + '%';
+        previous.disabled = current === 0;
+        next.disabled = current === slides.length - 1;
+        history.replaceState(null, '', '#slide-' + (current + 1));
+      }
+
+      previous.addEventListener('click', () => showSlide(current - 1));
+      next.addEventListener('click', () => showSlide(current + 1));
+      document.addEventListener('keydown', event => {
+        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+          event.preventDefault();
+          showSlide(current + 1);
+        } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+          event.preventDefault();
+          showSlide(current - 1);
+        } else if (event.key === 'Home') {
+          showSlide(0);
+        } else if (event.key === 'End') {
+          showSlide(slides.length - 1);
+        }
+      });
+      document.addEventListener('touchstart', event => { touchStart = event.changedTouches[0].screenX; }, { passive: true });
+      document.addEventListener('touchend', event => {
+        const delta = event.changedTouches[0].screenX - touchStart;
+        if (Math.abs(delta) > 65) showSlide(current + (delta < 0 ? 1 : -1));
+      }, { passive: true });
+
+      const requestedSlide = Number(location.hash.match(/slide-(\d+)/)?.[1]);
+      showSlide(Number.isFinite(requestedSlide) && requestedSlide > 0 ? requestedSlide - 1 : 0);
+    }());
+  </script>
+</body>
+</html>

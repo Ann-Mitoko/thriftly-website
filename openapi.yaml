@@ -73,6 +73,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
       security: []
+      description: Returns a verified vendor. A vendor that is not verified is treated as not found (404).
     put:
       summary: Update a vendor's profile
       operationId: updateVendor
@@ -318,8 +319,8 @@ paths:
                 status: confirmed
                 createdAt: '2026-10-12T06:29:23Z'
         '400':
-          description: Missing/invalid field (vendorId, productId, quantity, totalAmount, currency), or
-            quantity exceeds available stock
+          description: Missing/invalid field (vendorId, productId, quantity, totalAmount, currency), totalAmount
+            not equal to price x quantity, or quantity exceeds available stock
           content:
             application/json:
               schema:
@@ -349,8 +350,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
       description: 'Records a confirmed stock purchase and reduces the product''s available stock by the
-        purchased quantity. The product must belong to the given vendor. Requires the header `Authorization:
-        Bearer thriftly-dev-token-2026` (placeholder token until real auth is built).'
+        purchased quantity. The product must belong to the given vendor, and `totalAmount` must equal
+        the product''s price x `quantity`. The purchase and the stock change succeed or fail together,
+        and stock can never go below zero. Requires the header `Authorization: Bearer thriftly-dev-token-2026`
+        (placeholder token until real auth is built).'
     get:
       summary: List past purchases, newest first
       description: 'Returns purchase history so a consumer can analyse trends. Each record includes the
@@ -516,6 +519,7 @@ components:
         verified:
           type: boolean
           example: true
+          description: 'Always true: only verified vendors are ever returned.'
         description:
           type: string
           nullable: true
@@ -665,6 +669,7 @@ components:
           type: number
           format: float
           example: 1800
+          description: Must equal the product's price multiplied by quantity.
         currency:
           type: string
           example: KES

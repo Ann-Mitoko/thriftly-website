@@ -2,6 +2,10 @@ CONTRACT_DEVIATIONS.md
 
 1. Path parameters implemented as query strings, not clean REST paths
 
+SUPERSEDED (Week 8): this described the earlier PHP implementation. The submitted API is the Express
+server, which uses true path parameters (/vendors/{id}, /products/{id}) exactly as the contract
+promises, so this deviation no longer applies. Kept for the history of how the project got here.
+
 Contract promises GET /vendors/{id} and GET /products/{id}. Since Thriftly's PHP files are served
 directly by Apache without URL rewriting configured, these are implemented as
 api_vendor_detail.php?id={id} and api_product_detail.php?id={id} instead.
@@ -31,6 +35,10 @@ The API returns "currency": "KES" as a constant rather than a stored value. If T
 supports multiple currencies, this becomes a real column at that point — not needed today.
 
 4. Verification method: manual side-by-side comparison, not Swagger UI "Try it out"
+
+SUPERSEDED (Week 8): this described the PHP implementation. The Express server enables CORS and the
+contract's server URL is http://localhost:5000, so endpoints are verified with Swagger Editor's
+"Try it out" as intended. Kept for history.
 
 openapi.yaml's servers.url is still a placeholder (api.thriftly.example.com), and the PHP
 endpoints don't yet send CORS headers. Rather than spend this week's time wiring up a router and
@@ -171,3 +179,32 @@ Things Team 5 should know:
 
 API_NEEDS.md (Team 5 section) and ENDPOINT_LIST.md were updated with the new fields and a
 "Purchase History" needs statement, so the new endpoint traces back to a real need.
+
+---
+
+Week 8 fixes found by trying to break POST /purchases and the vendor detail endpoint
+
+Entries 19-21 change behaviour the Week 4 contract was silent about. 20 and 21 are the only ones
+that could affect Team 5, so they must be told.
+
+19. Purchases are now atomic and cannot oversell
+
+Before: 15 simultaneous purchases of a product with 3 in stock produced 4 accepted purchases and a
+stock level of -1, because stock was checked and then reduced in two separate steps. Now the
+product row is locked inside a database transaction, the purchase record and the stock reduction
+succeed or fail together, and the same test accepts exactly 3 and leaves stock at 0.
+
+20. totalAmount must equal the product's price x quantity (new 400 case)
+
+Before: the API accepted any total, so a 1800 item could be "bought" with totalAmount 1. Now a
+mismatch returns 400 with the expected value in the message, for example
+"totalAmount must equal the product price x quantity (expected 1800.00)". AFFECTS TEAM 5: any
+request whose total is not exactly price x quantity (for example one that applies a discount) is
+now rejected.
+
+21. GET /vendors/{id} returns 404 for vendors that are not verified
+
+Before: the detail endpoint returned vendors still awaiting approval, including their email and
+phone, to anyone who guessed the id, while GET /vendors correctly hid them. Now both agree.
+AFFECTS TEAM 5: looking up an unverified vendor by id gives 404 instead of a profile with
+"verified": false. The "verified" field is therefore always true in responses.
