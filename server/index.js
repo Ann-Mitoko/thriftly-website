@@ -6,8 +6,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 const YAML = require('yamljs');
-const spec = YAML.load('./openapi.yaml');
+const spec = YAML.load(path.join(__dirname, '..', './openapi.yaml'));
+
+const path = require('path');
+
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
 
