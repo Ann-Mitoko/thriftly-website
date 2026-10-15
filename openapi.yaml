@@ -349,17 +349,17 @@ paths:
                 message: No vendor found with the given vendorId
         '500':
           $ref: '#/components/responses/ServerError'
-      description: 'Records a confirmed stock purchase and reduces the product''s available stock by the
+      description: "Records a confirmed stock purchase and reduces the product's available stock by the
         purchased quantity. The product must belong to the given vendor, and `totalAmount` must equal
         the product''s price x `quantity`. The purchase and the stock change succeed or fail together,
         and stock can never go below zero. Requires the header `Authorization: Bearer thriftly-dev-token-2026`
-        (placeholder token until real auth is built).'
+        (placeholder token until real auth is built)."
     get:
       summary: List past purchases, newest first
-      description: 'Returns purchase history so a consumer can analyse trends. Each record includes the
-        product''s current name and brand (not a snapshot from the time of purchase). All filters are
+      description: "Returns purchase history so a consumer can analyse trends. Each record includes the
+        product's current name and brand (not a snapshot from the time of purchase). All filters are
         optional and combine with AND. Requires the header `Authorization: Bearer thriftly-dev-token-2026`
-        (placeholder token).'
+        (placeholder token)."
       operationId: listPurchases
       security:
       - bearerAuth: []
