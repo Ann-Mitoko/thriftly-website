@@ -16,6 +16,6 @@ app.use('/vendors', require('./routes/vendors'));
 app.use('/products', require('./routes/products'));
 app.use('/purchases', require('./routes/purchases'));
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0',() => 
   console.log(`Server running on http://localhost:${PORT}`);
-});
+);
