@@ -5,6 +5,12 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const spec = YAML.load('./openapi.yaml');
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
+
 app.use(cors());
 app.use(express.json());
 
