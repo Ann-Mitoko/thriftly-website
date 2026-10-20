@@ -25,6 +25,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+  console.log("Receiveed query parameters: ", req.query);
   try {
     const [rows] = await db.query(`
       SELECT p.product_id AS id, p.vendor_id AS vendorId, p.name AS name, c.name AS category,
