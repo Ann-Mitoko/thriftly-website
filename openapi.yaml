@@ -164,7 +164,7 @@ paths:
           - Kids
           - Accessories
           - Bulk
-          example: Streetwear
+          example: Vintage
       responses:
         '200':
           description: A list of active product listings
