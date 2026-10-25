@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
       WHERE v.status = 'verified'
       ORDER BY v.name ASC
     `);
-    res.json(rows.map(r => ({ id: r.id, name: r.name, category: r.category, market: r.market, description: r.description,
+    res.json(rows.map(r => ({ id: 'v_' +r.id, name: r.name, category: r.category, market: r.market, description: r.description,
       phone: r.phone, email: r.email, verified: r.status === 'verified' })));
   } catch (err) {
     console.error(err);
@@ -30,10 +30,10 @@ router.get('/:id', async (req, res) => {
       JOIN categories c ON v.category_id = c.category_id
       JOIN markets m ON v.market_id = m.market_id
       WHERE v.vendor_id = ? AND v.status = 'verified'
-    `, [req.params.id]);
+    `,    [String(req.params.id).replace(/^v_/, '')]);
     if (rows.length === 0) return res.status(404).json({ error: 'not_found', message: 'No vendor found with the given id' });
     const r = rows[0];
-    res.json({ id: r.id, name: r.name, category: r.category, market: r.market, description: r.description,
+    res.json({ id: 'v_' + r.id, name: r.name, category: r.category, market: r.market, description: r.description,
       phone: r.phone, email: r.email, verified: r.status === 'verified' });
   } catch (err) {
     console.error(err);
