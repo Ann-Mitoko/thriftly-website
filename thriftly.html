@@ -408,6 +408,30 @@
     </div>
     </div>
 
+
+<section id="healthServices" style="max-width:1100px;margin:2rem auto;padding:0 1rem;">
+  <h2>Nearby Health Services</h2>
+  <p>Find pharmacies and check medicine availability near the market </p>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0;">
+    <input id="hsMedicine" placeholder="Medicine, e.g. Panadol">
+    <select id="hsLocation">
+      <option value="">Choose an area</option>
+      <option>Nairobi CBD</option>
+      <option>Westlands</option>
+      <option>Eastleigh</option>
+      <option>Kisumu</option>
+      <option>Mombasa</option>
+    </select>
+    <button id="hsSearchBtn" class="btn" type="button">Search</button>
+    <button id="hsListBtn" class="btn btn-outline" type="button">Show all pharmacies</button>
+  </div>
+  <p id="hsStatus" aria-live="polite"></p>
+  <div id="hsResults"></div>
+</section>
+
     <script src="script.js"></script>
+
+    <script src="healthPanel.js"></script>
+    
 </body>
 </html>

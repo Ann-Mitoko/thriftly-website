@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const router = express.Router();
 const db = require('../db');
 
-const API_TOKEN = "thriftly-dev-token-2026"; // placeholder shared secret — see CONTRACT_DEVIATIONS.md
+const API_TOKEN = process.env.PURCHASES_TOKEN;  
 
 class HttpError extends Error {
   constructor(status, error, message) { super(message); this.status = status; this.error = error; }
@@ -11,7 +11,7 @@ class HttpError extends Error {
 
 function isAuthorized(req) {
   const match = (req.headers['authorization'] || '').match(/^Bearer\s+(.+)$/);
-  return Boolean(match) && match[1] === API_TOKEN;
+    return Boolean(API_TOKEN) && Boolean(match) && match[1] === API_TOKEN;
 }
 
 // GET /purchases  — purchase history, optionally filtered
@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
     return res.status(401).json({ error: 'unauthorized', message: 'Bearer token missing or invalid' });
   }
 
-  const body = req.body;
+    const body = req.body || {};
 
   // --- Validation: required fields present ---
   const required = ['vendorId', 'productId', 'quantity', 'totalAmount', 'currency'];
