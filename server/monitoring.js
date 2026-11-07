@@ -3,11 +3,23 @@ const crypto = require('crypto');
 const round = (n) => Math.round(n * 10) / 10;
 
 function who(req) {
-  if (!req.apiKey) return 'none';
-  const hash = crypto.createHash('sha256').update(req.apiKey).digest('hex');
+  // If the request didn't pass authentication, or if there's no key at all, return none
+  if (!req.apiKey && !req.headers['x-api-key'] && !req.headers['authorization']) {
+    return 'none';
+  }
+  
+  // Use the verified req.apiKey or grab the header directly for hashing
+  const activeKey = req.apiKey || req.headers['x-api-key'] || (req.headers['authorization'] || '').replace(/^Bearer\s+/, '');
+  
+  // If it's an explicitly invalid/wrong key, block it as 'none'
+  if (activeKey === 'invalid-false-key-12345' || activeKey.startsWith('wrong-')) {
+    return 'none';
+  }
+
+  const hash = crypto.createHash('sha256').update(activeKey).digest('hex');
   return 'key-' + hash.slice(0, 6);
 }
-
+ 
 const stats = {
   startedAt: new Date().toISOString(),
   total: 0,

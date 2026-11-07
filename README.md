@@ -330,3 +330,15 @@ mysql -u root < thriftly_schema.sql
 | `Unknown database 'thriftly_db'` | Step 2 wasn't run, or `DB_NAME` in `.env` isn't `thriftly_db` |
 | `500 server_error` on every request | Same causes as above — check the server terminal for the real error message |
 | `Port 5000 already in use` | Change `PORT` in `server/.env` and use that port in the URLs |
+
+## Request Logging & Monitoring (`/stats`)
+
+This service includes request-level performance monitoring and traffic aggregation middleware to track system health and error rates in real time.
+
+### Monitoring Endpoint
+
+* **Endpoint:** `GET /stats`
+* **Authentication:** Protected by API Key middleware (`X-API-Key` header required).
+* **Sample Request:**
+  ```bash
+  curl -s -H 'X-API-Key: thrifty-dev-token-2026' http://localhost:5000/stats

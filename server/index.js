@@ -2,9 +2,10 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const { monitor } = require('./monitoring');
 
-   const { requireApiKey, rateLimit, loadKeys } = require('./middleware/security');
+const { monitor, statsHandler } = require('./monitoring');
+
+const { requireApiKey, rateLimit, loadKeys } = require('./middleware/security');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -59,10 +60,14 @@ app.get('/', (req, res) => {
    console.log('API keys loaded:', loadKeys().size);   
 
    const apiLimiter = rateLimit({ windowMs: 60000, max: 60 });
+   app.use(monitor);
+   app.use(requireApiKey);
+   app.use(rateLimit({ windowMs: 60000, max: 100 }));
+   app.get('/stats', requireApiKey, statsHandler);
    app.use('/vendors', requireApiKey, apiLimiter, require('./routes/vendors'));
    app.use('/products', requireApiKey, apiLimiter, require('./routes/products'));
    app.use('/purchases', requireApiKey, apiLimiter, require('./routes/purchases'));
-   app.use('/health-services', rateLimit({ windowMs: 60000, max: 30 }), require('./routes/healthServices'));
+   app.use('/health-services', requireApiKey, rateLimit({ windowMs: 60000, max: 30 }), require('./routes/healthServices'));
 
 app.listen(PORT, '0.0.0.0',() => {
  console.log('Server is running on port ' + PORT);
