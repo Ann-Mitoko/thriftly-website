@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const { monitor } = require('./monitoring');
+
    const { requireApiKey, rateLimit, loadKeys } = require('./middleware/security');
 
 const app = express();
@@ -14,8 +16,37 @@ const spec = YAML.load(path.join(__dirname, '..', './openapi.yaml'));
 
 
 
+let lastGood = null; // Stores { data, asof } in memory
+
+app.get('/api/stock/search', async (req, res) => {
+  try {
+    const r = await fetchWithRetry(`${PARTNER_URL}/stock/search`, {}, { timeoutMs: 1500, retries: 2, delayMs: 200 });
+    
+    if (!r.ok) throw new Error(`Partner returned ${r.status}`);
+    
+    const data = await r.json();
+    
+    // Save successful data to memory
+    lastGood = { data, asof: new Date().toISOString() };
+    return res.json({ data, stale: false, asof: lastGood.asof });
+
+  } catch (err) {
+    const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
+    console.error('Partner call failed:', reason);
+
+    // If we have saved data, return it as stale!
+    if (lastGood) {
+      return res.json({ data: lastGood.data, stale: true, asof: lastGood.asof });
+    }
+
+    // If no data was ever saved, return a clean friendly message
+    return res.status(502).json({ message: 'Partner data unavailable right now' });
+  }
+});
+
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
+app.use(monitor);
 
 app.use(cors());
 app.use(express.json());
