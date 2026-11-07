@@ -1,7 +1,7 @@
-
 const HS_API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:5000/health-services'
-  : 'https://thriftly-website.onrender.com/';   // TODO(DEPLOY): placeholder. Use YOUR Render URL once the route is deployed there
+  : 'https://thrifty-website.onrender.com';
+
 
 function hsEscape(value) {
   return String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -57,7 +57,10 @@ function hsCard(item) {
 }
 
 function hsRender(data) {
-  const items = Array.isArray(data) ? data : [];
+  // Extract array from response object
+  const rawItems = data && data.data ? data.data : data;
+  const items = Array.isArray(rawItems) ? rawItems : [];
+  
   const box = document.getElementById('hsResults');
   if (items.length === 0) {
     box.innerHTML = '';
@@ -92,6 +95,7 @@ document.getElementById('hsResults').addEventListener('click', async (e) => {
   box.textContent = 'Loading...';
   const data = await hsFetch('/inventory?pharmacy_id=' + encodeURIComponent(btn.dataset.id));
   if (!data) { box.textContent = 'Could not load stock for this pharmacy.'; return; }
-  const items = Array.isArray(data) ? data : [];
+  const rawItems = data && data.data ? data.data : data;
+  const items = Array.isArray(rawItems) ? rawItems : [];
   box.innerHTML = items.length ? items.map(hsCard).join('') : '<p>No stock listed for this pharmacy.</p>';
 });

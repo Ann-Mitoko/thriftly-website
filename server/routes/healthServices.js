@@ -67,7 +67,7 @@ async function callPartner(path, query, res) {
 }
 
 // GET /health-services/health  -> /api/health
-router.get('/health', (req, res) => callPartner('/api/health', {}, res));
+router.get('/health', (req, res) => callPartner('/health', {}, res));
 
 // GET /health-services/pharmacies?verified=&lat=&lng=  -> /api/pharmacies
 router.get('/pharmacies', (req, res) =>
@@ -78,9 +78,11 @@ router.get('/inventory', (req, res) =>
   callPartner('/api/inventory', { pharmacy_id: req.query.pharmacy_id }, res));
 
 // GET /health-services/stock-search?medicine=&location=&lat=&lng=  -> /api/stock/search
-router.get('/stock-search', (req, res) =>
-  callPartner('/api/stock/search', {
-    medicine: req.query.medicine, location: req.query.location, lat: req.query.lat, lng: req.query.lng
-  }, res));
+router.get('/stock-search', (req, res) => {
+  console.log("INCOMING SEARCH QUERY:", req.query);
+  callPartner('/stock/search', {
+  medicine: req.query.medicine, location: req.query.location, lat: req.query.lat, lng: req.query.lng
+}, res)
+  });
 
 module.exports = router;
